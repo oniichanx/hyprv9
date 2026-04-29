@@ -42,6 +42,6 @@ while true; do
 			# Refresh UI components that depend on wallust output
 			$wallust_refresh
 			sleep $INTERVAL
-			
+
 		done
 done

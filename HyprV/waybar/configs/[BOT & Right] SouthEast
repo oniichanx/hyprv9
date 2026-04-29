@@ -22,7 +22,10 @@
 "margin-right": 6,
 "margin-bottom": 2,
 
-"modules-left": [
+"modules-left": [   
+    "custom/separator#blank",
+    "custom/hypr_layout",
+    "custom/separator#blank",
     "custom/menu",
     "cpu",
     "temperature", 
