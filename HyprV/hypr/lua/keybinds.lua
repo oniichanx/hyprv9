@@ -345,7 +345,7 @@ local app_binds = {
   { "SUPER", "T", "$HOME/.config/hypr/scripts/ThemeChanger.sh", "Global theme switcher using Wallust" },
   { "SUPER", "H", "$HOME/.config/hypr/scripts/KeyHints.sh", "help / cheat sheet" },
   { "SUPER ALT", "R", "$HOME/.config/hypr/scripts/Refresh.sh", "refresh bar and menus" },
-  { "SUPER ALT", "E", "$HOME/.config/hypr/scripts/RofiEmoji.sh", "emoji menu" },
+  { "SUPER SHIFT", "E", "$HOME/.config/hypr/scripts/RofiEmoji.sh", "emoji menu" },
   { "SUPER", "S", "$HOME/.config/hypr/scripts/RofiSearch.sh", "web search" },
   { "SUPER CTRL", "S", "rofi -show window", "window switcher" },
   { "SUPER ALT", "O", "$HOME/.config/hypr/scripts/ChangeBlur.sh", "toggle blur" },
@@ -396,7 +396,7 @@ local app_binds = {
   { "SUPER", "Y", "$HOME/.config/hypr/scripts/WaybarStyles.sh", "waybar styles menu" },
   { "SUPER", "T", "$HOME/.config/hypr/scripts/WaybarLayout.sh", "waybar layout menu" },
   { "SUPER", "N", "$HOME/.config/hypr/scripts/Hyprsunset.sh toggle", "toggle night light" },
-  { "SUPER SHIFT", "M", "$HOME/.config/hypr/UserScripts/RofiBeats.sh", "online music" },
+  { "SUPER ALT", "M", "$HOME/.config/hypr/UserScripts/RofiBeats.sh", "online music" },
   { "SUPER", "U", "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh", "select wallpaper" },
   { "SUPER", "I", "$HOME/.config/hypr/UserScripts/WallpaperEffects.sh", "wallpaper effects" },
   { "CTRL ALT", "W", "$HOME/.config/hypr/UserScripts/WallpaperRandom.sh", "random wallpaper" },
@@ -522,7 +522,7 @@ bind("CTRL ALT", "L", exec_cmd("$HOME/.config/hypr/scripts/LockScreen.sh"), { de
 bind("SUPER", "M", exec_cmd("$HOME/.config/hypr/scripts/Wlogout.sh"), { description = "powermenu" })
 bind("SUPER SHIFT", "N", exec_cmd("swaync-client -t -sw"), { description = "notification panel" })
 bind(
-  "SUPER SHIFT",
+  "SUPER ALT_L",
   "E",
   exec_cmd("$HOME/.config/hypr/scripts/QuickEdit.sh"),
   { description = "Quick settings menu" }

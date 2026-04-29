@@ -199,10 +199,10 @@ main() {
     
     # Map choices to corresponding files
     case $choice in
-        1) file="$UserConfigsLua/Settings.lua" ;;
+        1) file="$UserConfigsLua/settings.lua" ;;
         2) file="$UserConfigs/Default-Apps.conf" ;;
         3) file="$UserSettings/hyprland.conf" ;;
-        4) file="$UserConfigsLua/KeyBinds.lua" ;;
+        4) file="$UserConfigsLua/keybinds.lua" ;;
         5) file="$UserConfigs/UserDecorAnimations.conf" ;;
         6) file="$UserConfigs/WindowRules.conf" ;;
         7) file="$UserConfigs/WindowRules-new.conf" ;;
