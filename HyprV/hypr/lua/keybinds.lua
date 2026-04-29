@@ -510,7 +510,7 @@ bind(
   dispatch("movecurrentworkspacetomonitor", "d"),
   { description = "move workspace to down monitor" }
 )
-bind("SUPER SHIFT", "M", raw_dispatch_cmd("exit 0"), { description = "exit Hyprland" })
+bind("SUPER SHIFT", "M", raw_dispatch_cmd("exit"), { description = "exit Hyprland" })
 bind("SUPER", "F4", dispatch("killactive", ""), { description = "close active window" })
 bind(
   "SUPER SHIFT",
