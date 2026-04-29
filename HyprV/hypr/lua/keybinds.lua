@@ -338,12 +338,10 @@ end
 
 -- Application and script binds.
 local app_binds = {
-  { "SUPER", "D", "pkill rofi || true && rofi -show drun -modi drun,filebrowser,run,window", "app launcher" },
+  { "SUPER", "SPACE", "pkill rofi || true && rofi -show drun -modi drun,filebrowser,run,window", "app launcher" },
   { "SUPER", "B", 'xdg-open "https://"', "open default browser" },
-  { "SUPER", "A", "$HOME/.config/hypr/scripts/OverviewToggle.sh", "desktop overview" },
-  { "SUPER", "Return", "kitty", "Open terminal" },
+  { "SUPER", "Q", "kitty", "Open terminal" },
   { "SUPER", "E", "thunar", "file manager" },
-  { "SUPER", "C", "$HOME/.config/hypr/scripts/rofi-ssh-menu.sh", "SSH session manager" },
   { "SUPER", "T", "$HOME/.config/hypr/scripts/ThemeChanger.sh", "Global theme switcher using Wallust" },
   { "SUPER", "H", "$HOME/.config/hypr/scripts/KeyHints.sh", "help / cheat sheet" },
   { "SUPER ALT", "R", "$HOME/.config/hypr/scripts/Refresh.sh", "refresh bar and menus" },
@@ -351,10 +349,10 @@ local app_binds = {
   { "SUPER", "S", "$HOME/.config/hypr/scripts/RofiSearch.sh", "web search" },
   { "SUPER CTRL", "S", "rofi -show window", "window switcher" },
   { "SUPER ALT", "O", "$HOME/.config/hypr/scripts/ChangeBlur.sh", "toggle blur" },
-  { "SUPER SHIFT", "G", "$HOME/.config/hypr/scripts/GameMode.sh", "toggle game mode" },
+  { "SUPER ALT", "G", "$HOME/.config/hypr/scripts/GameMode.sh", "toggle game mode" },
   { "SUPER ALT", "L", "$HOME/.config/hypr/scripts/ChangeLayout.sh toggle", "toggle layouts" },
   { "SUPER ALT", "V", "$HOME/.config/hypr/scripts/ClipManager.sh", "clipboard manager" },
-  { "SUPER CTRL", "R", "$HOME/.config/hypr/scripts/RofiThemeSelector.sh", "rofi theme selector" },
+  { "SUPER ALT", "R", "$HOME/.config/hypr/scripts/RofiThemeSelector.sh", "rofi theme selector" },
   {
     "SUPER CTRL SHIFT",
     "R",
@@ -380,7 +378,7 @@ local app_binds = {
     "$HOME/.config/hypr/scripts/hyprshot.sh -m region -o $HOME/Pictures/Screenshots",
     "Hyprshot Screen Capture",
   },
-  { "SUPER ALT", "SPACE", "$HOME/.config/hypr/scripts/Float-all-Windows.sh", "Float all windows" },
+  { "SUPER ALT", "V", "$HOME/.config/hypr/scripts/Float-all-Windows.sh", "Float all windows" },
   { "SUPER SHIFT", "Return", "$HOME/.config/hypr/scripts/Dropterminal.sh kitty", "DropDown terminal" },
   {
     "SUPER ALT",
@@ -395,15 +393,15 @@ local app_binds = {
     "zoom out",
   },
   { "SUPER CTRL ALT", "B", "pkill -SIGUSR1 waybar", "toggle waybar on/off" },
-  { "SUPER CTRL", "B", "$HOME/.config/hypr/scripts/WaybarStyles.sh", "waybar styles menu" },
-  { "SUPER ALT", "B", "$HOME/.config/hypr/scripts/WaybarLayout.sh", "waybar layout menu" },
+  { "SUPER", "Y", "$HOME/.config/hypr/scripts/WaybarStyles.sh", "waybar styles menu" },
+  { "SUPER", "T", "$HOME/.config/hypr/scripts/WaybarLayout.sh", "waybar layout menu" },
   { "SUPER", "N", "$HOME/.config/hypr/scripts/Hyprsunset.sh toggle", "toggle night light" },
   { "SUPER SHIFT", "M", "$HOME/.config/hypr/UserScripts/RofiBeats.sh", "online music" },
-  { "SUPER", "W", "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh", "select wallpaper" },
-  { "SUPER SHIFT", "W", "$HOME/.config/hypr/UserScripts/WallpaperEffects.sh", "wallpaper effects" },
+  { "SUPER", "U", "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh", "select wallpaper" },
+  { "SUPER", "I", "$HOME/.config/hypr/UserScripts/WallpaperEffects.sh", "wallpaper effects" },
   { "CTRL ALT", "W", "$HOME/.config/hypr/UserScripts/WallpaperRandom.sh", "random wallpaper" },
   { "SUPER SHIFT", "K", "$HOME/.config/hypr/scripts/KeyBinds.sh", "search keybinds" },
-  { "SUPER SHIFT", "A", "$HOME/.config/hypr/scripts/Animations.sh", "animations menu" },
+  { "SUPER ALT", "H", "$HOME/.config/hypr/scripts/Animations.sh", "animations menu" },
   { "SUPER SHIFT", "O", "$HOME/.config/hypr/UserScripts/ZshChangeTheme.sh", "change oh-my-zsh theme" },
   { "SUPER ALT", "C", "$HOME/.config/hypr/UserScripts/RofiCalc.sh", "calculator" },
 }
@@ -472,9 +470,9 @@ end
 -- )
 
 -- Manual actions kept explicit for clarity.
-bind("SUPER SHIFT", "F", dispatch("fullscreen", ""), { description = "fullscreen" })
+bind("SUPER ALT", "F", dispatch("fullscreen", ""), { description = "fullscreen" })
 bind("SUPER CTRL", "F", dispatch("fullscreen", "1"), { description = "maximize window" })
-bind("SUPER", "SPACE", dispatch("togglefloating", ""), { description = "Float current window" })
+bind("SUPER", "V", dispatch("togglefloating", ""), { description = "Float current window" })
 bind("SUPER CTRL", "O", dispatch("setprop", "active opaque toggle"), { description = "toggle active window opacity" })
 bind(
   "ALT_L",
@@ -512,8 +510,8 @@ bind(
   dispatch("movecurrentworkspacetomonitor", "d"),
   { description = "move workspace to down monitor" }
 )
-bind("CTRL ALT", "Delete", raw_dispatch_cmd("exit 0"), { description = "exit Hyprland" })
-bind("SUPER", "Q", dispatch("killactive", ""), { description = "close active window" })
+bind("SUPER SHIFT", "M", raw_dispatch_cmd("exit 0"), { description = "exit Hyprland" })
+bind("SUPER", "F4", dispatch("killactive", ""), { description = "close active window" })
 bind(
   "SUPER SHIFT",
   "Q",
@@ -521,7 +519,7 @@ bind(
   { description = "Terminate active process" }
 )
 bind("CTRL ALT", "L", exec_cmd("$HOME/.config/hypr/scripts/LockScreen.sh"), { description = "lock screen" })
-bind("CTRL ALT", "P", exec_cmd("$HOME/.config/hypr/scripts/Wlogout.sh"), { description = "powermenu" })
+bind("SUPER", "M", exec_cmd("$HOME/.config/hypr/scripts/Wlogout.sh"), { description = "powermenu" })
 bind("SUPER SHIFT", "N", exec_cmd("swaync-client -t -sw"), { description = "notification panel" })
 bind(
   "SUPER SHIFT",
