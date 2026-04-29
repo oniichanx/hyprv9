@@ -50,10 +50,10 @@ hl.config({
 
 hl.config({
   input = {
-    kb_layout = "us",
+    kb_layout = "us,th",
     kb_variant = "",
     kb_model = "",
-    kb_options = "",
+    kb_options = "grp:alt_shift_toggle",
     kb_rules = "",
     repeat_rate = 50,
     repeat_delay = 300,
