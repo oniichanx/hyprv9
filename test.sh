@@ -276,7 +276,7 @@ if [[ $INST =~ ^[Yy]$ ]]; then
     done
 
     echo -e "${NOTE} Removing conflicting xdg-desktop-portals..." | tee -a "$LOG"
-    for pkg in xdg-desktop-portal-gnome xdg-desktop-portal-gtk; do
+    for pkg in xdg-desktop-portal-gnome; do
         if pacman -Q "$pkg" &>/dev/null; then
             sudo pacman -R --noconfirm "$pkg" >> "$LOG" 2>&1
             echo -e "${OK} Removed $pkg"
