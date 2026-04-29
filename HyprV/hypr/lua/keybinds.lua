@@ -475,7 +475,7 @@ bind("SUPER CTRL", "F", dispatch("fullscreen", "1"), { description = "maximize w
 bind("SUPER", "V", dispatch("togglefloating", ""), { description = "Float current window" })
 bind("SUPER CTRL", "O", dispatch("setprop", "active opaque toggle"), { description = "toggle active window opacity" })
 bind(
-  "ALT_L",
+  "ALT",
   "SHIFT_L",
   dispatch("switch keyboard layout globally", "exec, $HOME/.config/hypr/scripts/KeyboardLayout.sh switch"),
   { locked = true, description = "switch keyboard layout globally" }
