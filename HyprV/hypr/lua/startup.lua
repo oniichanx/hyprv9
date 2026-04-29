@@ -20,7 +20,7 @@ local function exec_once(cmd)
   os.execute("sh -lc " .. shell_quote(script))
 end
 
-exec_once("$HOME/.config/hypr/initial-boot.sh")
+exec_once("$HOME/.config/hypr/startup.sh")
 exec_once("sh -c \"sleep 2; " .. scriptsDir .. "/WallpaperDaemon.sh\"")
 exec_once("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
 exec_once("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
@@ -35,6 +35,10 @@ exec_once("hypridle")
 exec_once(scriptsDir .. "/Hyprsunset.sh init")
 exec_once("wl-paste --type text --watch cliphist store")
 exec_once("wl-paste --type image --watch cliphist store")
+exec_once("blueman-applet")
+exec_once("portmaster")
+exec_once("xrandr --output DP-2 --primary")
+exec_once("$HOME/.config/hypr/xdg-portal-hyprland")
 
 -- Optional startup examples retained from the original config:
 -- exec_once("mpvpaper '*' -o \"load-scripts=no no-audio --loop\" \"\"")
