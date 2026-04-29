@@ -522,9 +522,9 @@ bind("CTRL ALT", "L", exec_cmd("$HOME/.config/hypr/scripts/LockScreen.sh"), { de
 bind("SUPER", "M", exec_cmd("$HOME/.config/hypr/scripts/Wlogout.sh"), { description = "powermenu" })
 bind("SUPER SHIFT", "N", exec_cmd("swaync-client -t -sw"), { description = "notification panel" })
 bind(
-  "SUPER ALT_L",
+  "SUPER ALT",
   "E",
-  exec_cmd("$HOME/.config/hypr/scripts/QuickEdit.sh"),
+  exec_cmd("$HOME/.config/hypr/UserScripts/QuickEdit.sh"),
   { description = "Quick settings menu" }
 )
 bind("SUPER CTRL", "D", dispatch("layoutmsg", "removemaster"), { description = "remove master" })
