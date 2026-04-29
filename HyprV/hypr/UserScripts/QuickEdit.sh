@@ -17,6 +17,7 @@ configs="$HOME/.config/hypr/configs"
 UserConfigs="$HOME/.config/hypr/UserConfigs"
 UserSettings="$HOME/.config/hypr"
 scriptsDir="$HOME/.config/hypr/scripts"
+UserConfigsLua="$HOME/.config/hypr/lua"
 
 rofi_theme="$HOME/.config/rofi/config-edit.rasi"
 msg=' ⁉️ Choose what to do ⁉️'
@@ -198,10 +199,10 @@ main() {
     
     # Map choices to corresponding files
     case $choice in
-        1) file="$UserConfigs/Settings.conf" ;;
+        1) file="$UserConfigsLua/Settings.lua" ;;
         2) file="$UserConfigs/Default-Apps.conf" ;;
         3) file="$UserSettings/hyprland.conf" ;;
-        4) file="$UserConfigs/KeyBinds.conf" ;;
+        4) file="$UserConfigsLua/KeyBinds.lua" ;;
         5) file="$UserConfigs/UserDecorAnimations.conf" ;;
         6) file="$UserConfigs/WindowRules.conf" ;;
         7) file="$UserConfigs/WindowRules-new.conf" ;;

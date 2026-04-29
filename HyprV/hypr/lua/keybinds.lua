@@ -524,7 +524,7 @@ bind("SUPER SHIFT", "N", exec_cmd("swaync-client -t -sw"), { description = "noti
 bind(
   "SUPER SHIFT",
   "E",
-  exec_cmd("$HOME/.config/hypr/scripts/Kool_Quick_Settings.sh"),
+  exec_cmd("$HOME/.config/hypr/scripts/QuickEdit.sh"),
   { description = "Quick settings menu" }
 )
 bind("SUPER CTRL", "D", dispatch("layoutmsg", "removemaster"), { description = "remove master" })
