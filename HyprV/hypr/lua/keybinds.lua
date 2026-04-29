@@ -351,7 +351,7 @@ local app_binds = {
   { "SUPER ALT", "O", "$HOME/.config/hypr/scripts/ChangeBlur.sh", "toggle blur" },
   { "SUPER ALT", "G", "$HOME/.config/hypr/scripts/GameMode.sh", "toggle game mode" },
   { "SUPER ALT", "L", "$HOME/.config/hypr/scripts/ChangeLayout.sh toggle", "toggle layouts" },
-  { "SUPER ALT", "V", "$HOME/.config/hypr/scripts/ClipManager.sh", "clipboard manager" },
+  { "ALT", "V", "$HOME/.config/hypr/scripts/ClipManager.sh", "clipboard manager" },
   { "SUPER ALT", "R", "$HOME/.config/hypr/scripts/RofiThemeSelector.sh", "rofi theme selector" },
   {
     "SUPER CTRL SHIFT",
