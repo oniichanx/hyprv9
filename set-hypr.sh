@@ -171,6 +171,7 @@ if [[ "$BLEEDING_EDGE" == true ]]; then
     HYPRLAND_ECOSYSTEM=(
         hyprlock-git
         hyprsunset-git
+        hyprshutdown-git
     )
 else
     HYPR_PACKAGE="hyprland"
@@ -178,6 +179,7 @@ else
     HYPRLAND_ECOSYSTEM=(
         hyprlock
         hyprsunset
+        hyprshutdown
     )
 fi
 

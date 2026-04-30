@@ -138,7 +138,7 @@ nvidia_stage=(
 )
 
 install_stage=(
-    kitty swaync waybar awww hyprlock wallust yad bc rofi-wayland
+    kitty swaync waybar awww wallust yad bc rofi-wayland
     imagemagick bibata-cursor-theme-bin wlogout
     swappy grim slurp thunar btop firefox librewolf-bin thunderbird mpv
     pamixer pavucontrol brightnessctl bluez bluez-utils blueman
@@ -146,29 +146,41 @@ install_stage=(
     papirus-icon-theme ttf-jetbrains-mono ttf-jetbrains-mono-nerd
     ttf-droid ttf-fira-code noto-fonts-emoji adobe-source-code-pro-fonts
     otf-font-awesome lxappearance xfce4-settings nwg-look sddm hyprpolkitagent
-    xdg-utils hyprsunset
+    xdg-utils
 )
 
 clear
 
 # ================== เลือก Hyprland ==================
 echo -e "${NOTE} Select Hyprland version:"
-echo "1) hyprland-git (bleeding-edge)"
+echo "1) hyprland-git (bleeding-edge - all hypr packages will use -git)"
 echo "2) hyprland (stable)"
 read -rep $'[\e[1;33mACTION\e[0m] - Enter 1 or 2: ' HYPRCHOICE
 
 if [[ $HYPRCHOICE == "1" ]]; then
+    BLEEDING_EDGE=true
+    echo -e "${NOTE} Bleeding-edge mode enabled. All Hyprland ecosystem packages will use -git versions."
+else
+    BLEEDING_EDGE=false
+fi
+
+# กำหนด package ตาม mode
+if [[ "$BLEEDING_EDGE" == true ]]; then
     HYPR_PACKAGE="hyprland-git"
     PORTAL_PACKAGE="xdg-desktop-portal-hyprland-git"
+    HYPRLAND_ECOSYSTEM=(
+        hyprlock-git
+        hyprsunset-git
+        hyprshutdown-git
+    )
 else
     HYPR_PACKAGE="hyprland"
     PORTAL_PACKAGE="xdg-desktop-portal-hyprland"
-fi
-
-read -rep $'[\e[1;33mACTION\e[0m] - Continue with installation? (y/n): ' CONTINST
-if [[ ! $CONTINST =~ ^[Yy]$ ]]; then
-    echo -e "${NOTE} Cancelled."
-    exit 0
+    HYPRLAND_ECOSYSTEM=(
+        hyprlock
+        hyprsunset
+        hyprshutdown
+    )
 fi
 
 # ================== Detect NVIDIA ==================
@@ -270,6 +282,11 @@ if [[ $INST =~ ^[Yy]$ ]]; then
     echo -e "${NOTE} === Installing $PORTAL_PACKAGE ===" | tee -a "$LOG"
     install_software "$PORTAL_PACKAGE"
 
+    echo -e "${NOTE} === Installing Hyprland Ecosystem (${BLEEDING_EDGE:+git}) ===" | tee -a "$LOG"
+    for pkg in "${HYPRLAND_ECOSYSTEM[@]}"; do
+        install_software "$pkg"
+    done
+
     echo -e "${NOTE} === Installing Main Packages ===" | tee -a "$LOG"
     for SOFTWR in "${install_stage[@]}"; do
         install_software "$SOFTWR"
@@ -356,8 +373,14 @@ if [[ $CFG =~ ^[Yy]$ ]]; then
     ln -sf ~/.config/HyprV/waybar/style ~/.config/waybar/style 2>/dev/null || true
 
     if [[ "$ISNVIDIA" == true ]]; then
+        # เพิ่มใน hyprland.conf
         if ! grep -q "env_var_nvidia.conf" ~/.config/hypr/hyprland.conf 2>/dev/null; then
             echo -e "\nsource = ~/.config/hypr/env_var_nvidia.conf" >> ~/.config/hypr/hyprland.conf
+        fi
+
+        # เพิ่มใน hyprland.lua
+        if ! grep -q "env_nvidia.lua" ~/.config/hypr/hyprland.lua 2>/dev/null; then
+            echo -e '\nload_module("env_nvidia")' >> ~/.config/hypr/hyprland.conf
         fi
     fi
 
