@@ -34,7 +34,7 @@ trap 'echo -e "\n${ERROR} Script interrupted! Check $LOG for details."; exit 1' 
 
 # ================== ติดตั้ง dependencies ขั้นต่ำก่อนเลย ==================
 echo -e "${NOTE} Ensuring base dependencies are installed..."
-sudo pacman -S --noconfirm --needed base-devel git pciutils >> "$LOG" 2>&1 || {
+sudo pacman -S --noconfirm --needed base-devel git pciutils rsync >> "$LOG" 2>&1 || {
     echo -e "${ERROR} Failed to install base dependencies. Check $LOG"
     exit 1
 }
@@ -138,7 +138,7 @@ nvidia_stage=(
 )
 
 install_stage=(
-    kitty swaync waybar awww hyprlock wallust yad bc rofi-wayland
+    kitty swaync waybar awww wallust yad bc rofi-wayland
     imagemagick bibata-cursor-theme-bin wlogout
     swappy grim slurp thunar btop firefox librewolf-bin thunderbird mpv
     pamixer pavucontrol brightnessctl bluez bluez-utils blueman
@@ -153,22 +153,32 @@ clear
 
 # ================== เลือก Hyprland ==================
 echo -e "${NOTE} Select Hyprland version:"
-echo "1) hyprland-git (bleeding-edge)"
+echo "1) hyprland-git (bleeding-edge - all hypr packages will use -git)"
 echo "2) hyprland (stable)"
 read -rep $'[\e[1;33mACTION\e[0m] - Enter 1 or 2: ' HYPRCHOICE
 
 if [[ $HYPRCHOICE == "1" ]]; then
+    BLEEDING_EDGE=true
+    echo -e "${NOTE} Bleeding-edge mode enabled. All Hyprland ecosystem packages will use -git versions."
+else
+    BLEEDING_EDGE=false
+fi
+
+# กำหนด package ตาม mode
+if [[ "$BLEEDING_EDGE" == true ]]; then
     HYPR_PACKAGE="hyprland-git"
     PORTAL_PACKAGE="xdg-desktop-portal-hyprland-git"
+    HYPRLAND_ECOSYSTEM=(
+        hyprlock-git
+        hyprsunset-git
+    )
 else
     HYPR_PACKAGE="hyprland"
     PORTAL_PACKAGE="xdg-desktop-portal-hyprland"
-fi
-
-read -rep $'[\e[1;33mACTION\e[0m] - Continue with installation? (y/n): ' CONTINST
-if [[ ! $CONTINST =~ ^[Yy]$ ]]; then
-    echo -e "${NOTE} Cancelled."
-    exit 0
+    HYPRLAND_ECOSYSTEM=(
+        hyprlock
+        hyprsunset
+    )
 fi
 
 # ================== Detect NVIDIA ==================
@@ -270,13 +280,18 @@ if [[ $INST =~ ^[Yy]$ ]]; then
     echo -e "${NOTE} === Installing $PORTAL_PACKAGE ===" | tee -a "$LOG"
     install_software "$PORTAL_PACKAGE"
 
+    echo -e "${NOTE} === Installing Hyprland Ecosystem (${BLEEDING_EDGE:+git}) ===" | tee -a "$LOG"
+    for pkg in "${HYPRLAND_ECOSYSTEM[@]}"; do
+        install_software "$pkg"
+    done
+
     echo -e "${NOTE} === Installing Main Packages ===" | tee -a "$LOG"
     for SOFTWR in "${install_stage[@]}"; do
         install_software "$SOFTWR"
     done
 
     echo -e "${NOTE} Removing conflicting xdg-desktop-portals..." | tee -a "$LOG"
-    for pkg in xdg-desktop-portal-gnome xdg-desktop-portal-gtk; do
+    for pkg in xdg-desktop-portal-gnome; do
         if pacman -Q "$pkg" &>/dev/null; then
             sudo pacman -R --noconfirm "$pkg" >> "$LOG" 2>&1
             echo -e "${OK} Removed $pkg"
@@ -455,6 +470,21 @@ elif systemctl --user list-unit-files 2>/dev/null | grep -q "^${SERVICE}\.servic
     fi
 else
     echo -e "${WARN} $SERVICE.service not found. Skipping..." | tee -a "$LOG"
+fi
+
+# ================== Copy systemd user overrides ==================
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SYSTEMD_SRC="$SCRIPT_DIR/config/systemd"
+SYSTEMD_DEST="$HOME/.config/systemd"
+
+if [ -d "$SYSTEMD_SRC" ]; then
+    echo -e "${NOTE} Copying systemd user overrides..." | tee -a "$LOG"
+    mkdir -p "$SYSTEMD_DEST"
+    cp -r "$SYSTEMD_SRC/." "$SYSTEMD_DEST/" >> "$LOG" 2>&1
+
+    systemctl --user daemon-reload >> "$LOG" 2>&1 || true
+else
+    echo -e "${WARN} systemd override folder not found, skipping..." | tee -a "$LOG"
 fi
 
 # ================== Final Verification ==================
