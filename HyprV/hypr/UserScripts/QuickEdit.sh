@@ -247,6 +247,8 @@ main() {
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/layer_rules.lua"; else file="$UserConfigs/LayerRules.conf"; fi ;;
         "Edit User Default Window Rules")
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/window_rules.lua"; else file="$configs2/WindowRulesUser.conf"; fi ;;
+        "Edit User Default Monitors")
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/monitors.lua"; else file="$hypr_dir/monitors.conf"; fi ;;
         "Edit User Settings")
             if [[ "$hypr_config_mode" == "lua" ]]; then
                 file="$UserConfigs/user_settings.lua"
