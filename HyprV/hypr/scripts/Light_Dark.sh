@@ -5,6 +5,7 @@
 #DARK_CONFIG="$MAKO_CONFIG_DIR/config-dark"
 #MAKO_CONFIG_TARGET="$HOME/.config/mako/config"
 iDIR="$HOME/.config/HyprV/swaync/images"
+SCRIPTSDIR="$HOME/.config/hypr/scripts"
 
 current_icon_theme=$(xfconf-query -c xsettings -p /Net/IconThemeName)
 
@@ -32,8 +33,11 @@ gsettings set org.gnome.desktop.interface color-scheme "$COLOR_SCHEME"
 notify-send -e -h string:x-canonical-private-synchronous:sys-notify -u low -i "$iDIR/ja.png" "Switching to $MODESTR mode"
 
 # Wait before restarting services
-sleep 1
+sleep 2
+# kill process
+for pid1 in waybar rofi swaync ags swaybg; do
+    killall "$pid1"
+done
 
-# Restart Mako and Waybar
-pkill swaync && swaync &
-pkill waybar && waybar &
+sleep 1
+${SCRIPTSDIR}/Refresh.sh 
