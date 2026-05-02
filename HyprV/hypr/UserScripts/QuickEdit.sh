@@ -266,7 +266,7 @@ main() {
         "Edit User Laptop Settings")
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/laptops.lua"; else file="$UserConfigs/Laptops.conf"; fi ;;
         "Edit System Default Keybinds")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/keybinds.lua"; else file="$configs2/Keybinds.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/keybinds.lua"; else file="$configs2/KeyBinds.conf"; fi ;;
         "Edit System Default Startup Apps")
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/startup.lua"; else file="$configs2/Startup_Apps.conf"; fi ;;
         "Edit System Default Window Rules")
