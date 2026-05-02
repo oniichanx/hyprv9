@@ -200,8 +200,10 @@ menu() {
     cat <<EOF
 --- USER CUSTOMIZATIONS ---
 Edit User Defaults
+Edit User Default Monitors
 Edit User ENV variables
 Edit User Layer Rules (overlay)
+Edit User Default Window Rules
 Edit User Settings
 Edit User Decorations
 Edit User Animations
