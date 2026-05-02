@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # /* ---- 💫 https://github.com/oniichanx 💫 ---- */  ##
-# Rofi menu for KooL Hyprland Quick Settings (SUPER SHIFT E)
+# Rofi menu for KooL Hyprland Quick Settings (SUPER E)
 # Updated for UserConfigs/configs separation
 
 # Detect active Hyprland config mode (Lua entrypoint vs legacy .conf includes)
