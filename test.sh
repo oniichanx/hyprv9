@@ -24,7 +24,7 @@ ask_yn() {
     local prompt="$1"
     local answer
     while true; do
-        read -rep $"[\e[1;33mACTION\e[0m] - ${prompt} (y/n): " answer
+        read -rep $'\e[1;33m[ACTION]\e[0m - '"${prompt} (y/n): " answer
         case "$answer" in
             [Yy]) echo "y"; return ;;
             [Nn]) echo "n"; return ;;
