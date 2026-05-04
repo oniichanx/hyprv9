@@ -19,6 +19,20 @@ fi
 mkdir -p Install-Logs
 LOG="Install-Logs/install-$(date +%d-%H%M%S).log"
 
+# ================== Y/N Helper ==================
+ask_yn() {
+    local prompt="$1"
+    local answer
+    while true; do
+        read -rep $"[\e[1;33mACTION\e[0m] - ${prompt} (y/n): " answer
+        case "$answer" in
+            [Yy]) echo "y"; return ;;
+            [Nn]) echo "n"; return ;;
+            *) echo -e "${WARN} Please enter Y or N only." ;;
+        esac
+    done
+}
+
 # ================== Root Check ==================
 if [[ "$EUID" -eq 0 ]]; then
     echo -e "${ERROR} Do not run this script as root! Run as normal user with sudo access."
@@ -65,8 +79,8 @@ if [[ "$ISVM" == true ]]; then
     echo -e "${WARN}  high chance this will fail."
     echo -e "${WARN} ============================================================"
     echo ""
-    read -rep $'[\e[1;33mACTION\e[0m] - Continue anyway? (y/n): ' VMCONTINUE
-    if [[ ! $VMCONTINUE =~ ^[Yy]$ ]]; then
+    VMCONTINUE=$(ask_yn "Continue anyway?")
+    if [[ $VMCONTINUE == "n" ]]; then
         echo -e "${NOTE} Cancelled."
         exit 0
     fi
@@ -205,8 +219,8 @@ BOOTLOADER=$(detect_bootloader)
 echo -e "${INFO} Detected bootloader: $BOOTLOADER" | tee -a "$LOG"
 
 # ================== WiFi powersave ==================
-read -rep $'[\e[1;33mACTION\e[0m] - Disable WiFi powersave? (y/n) ' WIFI
-if [[ $WIFI =~ ^[Yy]$ ]]; then
+WIFI=$(ask_yn "Disable WiFi powersave?")
+if [[ $WIFI == "y" ]]; then
     sudo mkdir -p /etc/NetworkManager/conf.d
     echo -e "[connection]\nwifi.powersave = 2" | sudo tee /etc/NetworkManager/conf.d/wifi-powersave.conf >/dev/null
     sudo systemctl restart NetworkManager
@@ -214,8 +228,8 @@ if [[ $WIFI =~ ^[Yy]$ ]]; then
 fi
 
 # ====================== Install Packages ======================
-read -rep $'[\e[1;33mACTION\e[0m] - Install all packages? (y/n) ' INST
-if [[ $INST =~ ^[Yy]$ ]]; then
+INST=$(ask_yn "Install all packages?")
+if [[ $INST == "y" ]]; then
     echo -e "${NOTE} === Prep Stage ===" | tee -a "$LOG"
     for SOFTWR in "${prep_stage[@]}"; do
         install_software "$SOFTWR"
@@ -307,8 +321,8 @@ if [[ $INST =~ ^[Yy]$ ]]; then
 fi
 
 # ====================== Copy Config Files + Dark Theme ======================
-read -rep $'[\e[1;33mACTION\e[0m] - Copy config files? (y/n) ' CFG
-if [[ $CFG =~ ^[Yy]$ ]]; then
+CFG=$(ask_yn "Copy config files?")
+if [[ $CFG == "y" ]]; then
     echo -e "${NOTE} Copying config files..."
 
     # ตรวจว่า HyprV มีอยู่จริงก่อน ถ้าไม่มีให้หยุดทันที ไม่งั้น symlink ทั้งหมดจะชี้ไปที่ว่าง
@@ -317,7 +331,7 @@ if [[ $CFG =~ ^[Yy]$ ]]; then
         exit 1
     fi
 
-    cp -R HyprV ~/.config/
+    cp -R HyprV ~/.config/ || { echo -e "${ERROR} Failed to copy HyprV to ~/.config/. Check $LOG"; exit 1; }
 
     for DIR in hypr kitty swaync swaylock waybar wlogout rofi; do
         DIRPATH=~/.config/$DIR
@@ -402,8 +416,8 @@ if [[ $CFG =~ ^[Yy]$ ]]; then
 fi
 
 # ================== Starship ==================
-read -rep $'[\e[1;33mACTION\e[0m] - Enable Starship shell? (y/n) ' STAR
-if [[ $STAR =~ ^[Yy]$ ]]; then
+STAR=$(ask_yn "Enable Starship shell?")
+if [[ $STAR == "y" ]]; then
     if ! grep -q 'starship init bash' ~/.bashrc 2>/dev/null; then
         echo 'eval "$(starship init bash)"' >> ~/.bashrc
     fi
@@ -411,8 +425,8 @@ if [[ $STAR =~ ^[Yy]$ ]]; then
 fi
 
 # ================== Wallpaper ==================
-read -rep $'[\e[1;33mACTION\e[0m] - Enable wallpaper on startup? (y/n) ' SET_WALLPAPER
-if [[ $SET_WALLPAPER =~ ^[Yy]$ ]]; then
+SET_WALLPAPER=$(ask_yn "Enable wallpaper on startup?")
+if [[ $SET_WALLPAPER == "y" ]]; then
     sed -i 's|#exec-once = ~/.config/hypr/startup.sh|exec-once = ~/.config/hypr/startup.sh|' ~/.config/hypr/hyprland.conf 2>/dev/null || true
 fi
 
@@ -431,8 +445,8 @@ else
 fi
 
 # ================== ASUS ROG ==================
-read -rep $'[\e[1;33mACTION\e[0m] - Install ASUS ROG support? (y/n) ' ROG
-if [[ $ROG =~ ^[Yy]$ ]]; then
+ROG=$(ask_yn "Install ASUS ROG support?")
+if [[ $ROG == "y" ]]; then
     echo -e "${NOTE} Setting up ASUS ROG support..." | tee -a "$LOG"
     sudo pacman-key --recv-keys 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35 &>>"$LOG"
     sudo pacman-key --lsign-key 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35 &>>"$LOG"
@@ -505,7 +519,7 @@ else
     echo -e "${WARN} Installation finished but $HYPR_PACKAGE may not be installed correctly. Check $LOG"
 fi
 
-read -rep $'[\e[1;33mACTION\e[0m] - Reboot now? (y/n) ' REBOOT
-if [[ $REBOOT =~ ^[Yy]$ ]]; then
+REBOOT=$(ask_yn "Reboot now?")
+if [[ $REBOOT == "y" ]]; then
     sudo reboot
 fi
