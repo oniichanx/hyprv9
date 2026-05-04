@@ -20,6 +20,7 @@ mkdir -p Install-Logs
 
 # ================== Script Directory ==================
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export SCRIPT_DIR
 
 LOG="Install-Logs/install-$(date +%d-%H%M%S).log"
 
@@ -28,7 +29,7 @@ ask_yn() {
     local prompt="$1"
     local answer
     while true; do
-        read -rep $'\e[1;33m[ACTION]\e[0m - '"${prompt} (y/n): " answer
+        read -rep $'\e[1;33m[ACTION]\e[0m - '"${prompt} (y/n): " answer < /dev/tty
         case "$answer" in
             [Yy]) echo "y"; return ;;
             [Nn]) echo "n"; return ;;
@@ -94,7 +95,7 @@ fi
 echo -e "${NOTE} Choose AUR Helper:"
 echo "1) Paru (recommended)"
 echo "2) Yay"
-read -rep $'[\e[1;33mACTION\e[0m] - Enter 1 or 2: ' AURCHOICE
+read -rep $'[\e[1;33mACTION\e[0m] - Enter 1 or 2: ' AURCHOICE < /dev/tty
 
 if [[ $AURCHOICE == "1" ]]; then
     AURHELPER="paru"
@@ -104,12 +105,11 @@ fi
 
 if ! command -v "$AURHELPER" &>/dev/null; then
     echo -e "${NOTE} Installing $AURHELPER..."
-    ORIG_DIR="$(pwd)"
     git clone "https://aur.archlinux.org/${AURHELPER}.git" /tmp/${AURHELPER} || {
         echo -e "${ERROR} Failed to clone $AURHELPER from AUR."
         exit 1
     }
-    cd /tmp/"$AURHELPER" && makepkg -si --noconfirm && cd "$ORIG_DIR"
+    (cd /tmp/"$AURHELPER" && makepkg -si --noconfirm)
     rm -rf /tmp/"$AURHELPER"
 fi
 
@@ -173,7 +173,7 @@ clear
 echo -e "${NOTE} Select Hyprland version:"
 echo "1) hyprland-git (bleeding-edge - all hypr packages will use -git)"
 echo "2) hyprland (stable)"
-read -rep $'[\e[1;33mACTION\e[0m] - Enter 1 or 2: ' HYPRCHOICE
+read -rep $'[\e[1;33mACTION\e[0m] - Enter 1 or 2: ' HYPRCHOICE < /dev/tty
 
 if [[ $HYPRCHOICE == "1" ]]; then
     BLEEDING_EDGE=true
@@ -436,7 +436,7 @@ fi
 
 # ================== Default Browser ==================
 echo -e "${NOTE} Choose default browser (1=Librewolf, 2=Firefox, 3=Brave):"
-read -rep $'[\e[1;33mACTION\e[0m] - Choice: ' BROWSER_CHOICE
+read -rep $'[\e[1;33mACTION\e[0m] - Choice: ' BROWSER_CHOICE < /dev/tty
 if command -v xdg-settings &>/dev/null; then
     case $BROWSER_CHOICE in
         1) xdg-settings set default-web-browser librewolf.desktop ;;
@@ -499,7 +499,6 @@ else
 fi
 
 # ================== Copy systemd user overrides ==================
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SYSTEMD_SRC="$SCRIPT_DIR/config/systemd"
 SYSTEMD_DEST="$HOME/.config/systemd"
 
