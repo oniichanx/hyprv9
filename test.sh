@@ -17,6 +17,10 @@ else
 fi
 
 mkdir -p Install-Logs
+
+# ================== Script Directory ==================
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 LOG="Install-Logs/install-$(date +%d-%H%M%S).log"
 
 # ================== Y/N Helper ==================
@@ -101,12 +105,12 @@ fi
 if ! command -v "$AURHELPER" &>/dev/null; then
     echo -e "${NOTE} Installing $AURHELPER..."
     ORIG_DIR="$(pwd)"
-    git clone "https://aur.archlinux.org/${AURHELPER}.git" || {
+    git clone "https://aur.archlinux.org/${AURHELPER}.git" /tmp/${AURHELPER} || {
         echo -e "${ERROR} Failed to clone $AURHELPER from AUR."
         exit 1
     }
-    cd "$AURHELPER" && makepkg -si --noconfirm && cd "$ORIG_DIR"
-    rm -rf "$AURHELPER"
+    cd /tmp/"$AURHELPER" && makepkg -si --noconfirm && cd "$ORIG_DIR"
+    rm -rf /tmp/"$AURHELPER"
 fi
 
 # ================== Progress Bar ==================
@@ -326,12 +330,12 @@ if [[ $CFG == "y" ]]; then
     echo -e "${NOTE} Copying config files..."
 
     # ตรวจว่า HyprV มีอยู่จริงก่อน ถ้าไม่มีให้หยุดทันที ไม่งั้น symlink ทั้งหมดจะชี้ไปที่ว่าง
-    if [[ ! -d "HyprV" ]]; then
-        echo -e "${ERROR} HyprV folder not found in $(pwd)! Aborting config copy."
+    if [[ ! -d "$SCRIPT_DIR/HyprV" ]]; then
+        echo -e "${ERROR} HyprV folder not found in $SCRIPT_DIR! Aborting config copy."
         exit 1
     fi
 
-    cp -R HyprV ~/.config/ || { echo -e "${ERROR} Failed to copy HyprV to ~/.config/. Check $LOG"; exit 1; }
+    cp -R "$SCRIPT_DIR/HyprV" ~/.config/ || { echo -e "${ERROR} Failed to copy HyprV to ~/.config/. Check $LOG"; exit 1; }
 
     for DIR in hypr kitty swaync swaylock waybar wlogout rofi; do
         DIRPATH=~/.config/$DIR
@@ -399,11 +403,11 @@ if [[ $CFG == "y" ]]; then
     fi
 
     echo -e "${NOTE} Setting up Dark Theme and SDDM..."
-    sudo cp -R Extras/sdt /usr/share/sddm/themes/ 2>/dev/null || true
+    sudo cp -R "$SCRIPT_DIR/Extras/sdt" /usr/share/sddm/themes/ 2>/dev/null || true
     sudo chown -R "$USER:$USER" /usr/share/sddm/themes/sdt 2>/dev/null || true
     sudo mkdir -p /etc/sddm.conf.d
     echo -e "[Theme]\nCurrent=sdt" | sudo tee /etc/sddm.conf.d/10-theme.conf >/dev/null
-    sudo cp Extras/hyprland.desktop /usr/share/wayland-sessions/ 2>/dev/null || true
+    sudo cp "$SCRIPT_DIR/Extras/hyprland.desktop" /usr/share/wayland-sessions/ 2>/dev/null || true
 
     cp -f ~/.config/HyprV/backgrounds/v4-background-dark.jpg /usr/share/sddm/themes/sdt/wallpaper.jpg 2>/dev/null || true
 
@@ -421,7 +425,7 @@ if [[ $STAR == "y" ]]; then
     if ! grep -q 'starship init bash' ~/.bashrc 2>/dev/null; then
         echo 'eval "$(starship init bash)"' >> ~/.bashrc
     fi
-    cp Extras/starship.toml ~/.config/ 2>/dev/null || true
+    cp "$SCRIPT_DIR/Extras/starship.toml" ~/.config/ 2>/dev/null || true
 fi
 
 # ================== Wallpaper ==================
