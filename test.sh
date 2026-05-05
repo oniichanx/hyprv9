@@ -479,6 +479,8 @@ if ! systemctl --user status &>/dev/null; then
     systemctl --user enable "$SERVICE" >> "$LOG" 2>&1 || true
 elif systemctl --user list-unit-files 2>/dev/null | grep -q "^${SERVICE}\.service"; then
 
+    systemctl --user daemon-reload >> "$LOG" 2>&1 || true
+
     echo -e "${NOTE} Stopping other polkit agents to prevent conflict..." | tee -a "$LOG"
     pkill -u "$UID" -f 'polkit-gnome-authentication-agent-1|xfce-polkit|polkit-kde-authentication-agent-1' 2>/dev/null || true
 
