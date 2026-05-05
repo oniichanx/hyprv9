@@ -17,6 +17,18 @@ hl.config({
   },
 })
 
+hl.device({
+    name = "geonworks-venom60he-7u-keyboard",
+    repeat_rate=50,
+    repeat_delay=500,
+    middle_button_emulation=0,
+})
+
+hl.device({
+    name = "compx-garuda-pro-wireless",
+    sensitivity = -0.5,
+})
+
 hl.config({
   master = {
     new_status = "slave",
