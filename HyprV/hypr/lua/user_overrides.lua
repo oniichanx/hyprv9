@@ -83,3 +83,40 @@ do
         end
       end
       legacy:close()
+
+      local function expand_vars(value)
+        value = tostring(value or "")
+        for _ = 1, 8 do
+          local changed = false
+          value = value:gsub("%$([%w_]+)", function(name)
+            local replacement = vars[name]
+            if replacement ~= nil then
+              changed = true
+              return replacement
+            end
+            return "$" .. name
+          end)
+          if not changed then
+            break
+          end
+        end
+        return value
+      end
+
+      for _, line in ipairs(raw_lines) do
+        local trimmed = trim(line)
+        if trimmed ~= "" and not trimmed:match("^#") then
+          local keyword, value = trimmed:match("^([%w_]+)%s*=%s*(.+)$")
+          if keyword and value and (keyword:match("^bind") or keyword == "unbind") then
+            local expanded = expand_vars(value)
+            local cmd = "hyprctl keyword " .. keyword .. " " .. string.format("%q", expanded)
+            local ok = os.execute(cmd)
+            if not ok then
+              print("[WARN] Failed to apply legacy keybind via: " .. cmd)
+            end
+          end
+        end
+      end
+    end
+  end
+end
