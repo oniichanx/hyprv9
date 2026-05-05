@@ -115,8 +115,8 @@
     "device": "intel_backlight",
     "format": "{icon} {percent}%",
     "format-icons": ["󰃞", "󰃟", "󰃠"],
-    "on-scroll-up": "~/.config/HyprV/waybar/scripts/brightness --inc",
-    "on-scroll-down": "~/.config/HyprV/waybar/scripts/brightness --dec",
+    "on-scroll-up": "$HOME/.config/hypr/scripts/Brightness.sh --inc",
+    "on-scroll-down": "$HOME/.config/hypr/scripts/Brightness.sh --dec",
     "min-length": 6
   },
 
@@ -198,10 +198,10 @@
     "format": "{icon} {volume}%",
     "tooltip": false,
     "format-muted": " Muted",
-    "on-click": "~/.config/HyprV/hypr/scripts/Volume.sh --toggle",
+    "on-click": "~/.config/hypr/scripts/Volume.sh --toggle",
     "on-click-right": "pavucontrol -t 3",
-    "on-scroll-up": "~/.config/HyprV/hypr/scripts/Volume.sh --inc",
-    "on-scroll-down": "~/.config/HyprV/hypr/scripts/Volume.sh --dec",
+    "on-scroll-up": "~/.config/hypr/scripts/Volume.sh --inc",
+    "on-scroll-down": "~/.config/hypr/scripts/Volume.sh --dec",
     "scroll-step": 5,
     "format-icons": {
       "headphone": "",
@@ -220,10 +220,10 @@
     "format": "{format_source}",
     "format-source": " {volume}%",
     "format-source-muted": "  Muted",
-    "on-click": "~/.config/HyprV/hypr/scripts/Volume.sh --toggle-mic",
+    "on-click": "~/.config/hypr/scripts/Volume.sh --toggle-mic",
     "on-click-right": "pavucontrol -t 4",
-    "on-scroll-up": "~/.config/HyprV/hypr/scripts/Volume.sh --mic-inc",
-    "on-scroll-down": "~/.config/HyprV/hypr/scripts/Volume.sh --mic-dec",
+    "on-scroll-up": "~/.config/hypr/scripts/Volume.sh --mic-inc",
+    "on-scroll-down": "~/.config/hypr/scripts/Volume.sh --mic-dec",
     "tooltip-format": "{source_desc} | {source_volume}%",
     "scroll-step": 5
   },
@@ -244,7 +244,7 @@
 
   "custom/light_dark": {
     "format": "󰐾",
-    "on-click": "~/.config/HyprV/hypr/scripts/Light_Dark.sh",
+    "on-click": "~/.config/hypr/scripts/Light_Dark.sh",
     "tooltip-format": "Default Keybinds\nSUPER + Q = Start Kitty\nSUPER + F4 = Close Window\nSUPER + L = Lock Screen\nSUPER + M = Logout menu\nSUPER + E = File Manager\nSUPER + V = Toggle Float\nSUPER + SPACE = App Launcher\nSUPER + S = Screenshot\nSUPER + T = Switch WaybarLayout\nSUPER + Y = Switch WaybarStyles\nSUPER + U = Wallpaper Select\nSUPER + F = Fake Fullscreen\nALT + V = Open clipboard manager"
   },
 
@@ -253,7 +253,7 @@
     "return-type": "json",
     "interval": 1,
     "exec": "echo '{ \"text\": \"\", \"class\": \"used\" }'",
-    "exec-if": "~/.config/HyprV/hypr/UserScripts/cam.sh"
+    "exec-if": "~/.config/hypr/UserScripts/cam.sh"
   },
 
   "custom/spotify": {
@@ -274,8 +274,8 @@
   /* 
   "custom/updates": {
     "format": "{}",
-    "exec": "~/.config/HyprV/waybar/scripts/update1-sys",
-    "on-click": "~/.config/HyprV/waybar/scripts/update1-sys update",
+    "exec": "~/.config/hypr/scripts/update1-sys",
+    "on-click": "~/.config/hypr/scripts/update1-sys update",
     "interval": 300,
     "tooltip": true
   },
@@ -294,7 +294,7 @@
   "hyprland/language": {
     "interval": 30,
     "format": " {}",
-    "on-click": "~/.config/HyprV/hypr/scripts/KeyboardLayout.sh switch",
+    "on-click": "~/.config/hypr/scripts/KeyboardLayout.sh switch",
     "signal": 8
   },
 
