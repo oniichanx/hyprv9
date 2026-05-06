@@ -397,8 +397,10 @@ if [[ $CFG == "y" ]]; then
         fi
 
         # เพิ่มใน hyprland.lua
-        if ! grep -qF "env_nvidia.lua" ~/.config/hypr/hyprland.lua 2>/dev/null; then
-            printf '\nload_module("env_nvidia")\n' >> ~/.config/hypr/hyprland.lua
+        if [[ -f ~/.config/hypr/hyprland.lua ]]; then
+            if ! grep -qF "env_nvidia.lua" ~/.config/hypr/hyprland.lua; then
+                printf '\nload_module("env_nvidia")\n' >> ~/.config/hypr/hyprland.lua
+            fi
         fi
     fi
 
