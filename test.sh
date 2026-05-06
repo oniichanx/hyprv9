@@ -158,7 +158,7 @@ nvidia_stage=(
 install_stage=(
     kitty swaync waybar awww wallust yad bc rofi-wayland
     imagemagick bibata-cursor-theme-bin wlogout
-    swappy grim slurp thunar btop firefox thunderbird mpv
+    swappy grim slurp thunar btop firefox librewolf-bin thunderbird mpv
     pamixer pavucontrol brightnessctl bluez bluez-utils blueman
     network-manager-applet gvfs thunar-archive-plugin file-roller starship
     papirus-icon-theme ttf-jetbrains-mono ttf-jetbrains-mono-nerd
@@ -441,7 +441,7 @@ if command -v xdg-settings &>/dev/null; then
     case $BROWSER_CHOICE in
         1) xdg-settings set default-web-browser librewolf.desktop ;;
         2) xdg-settings set default-web-browser firefox.desktop ;;
-        3) xdg-settings set default-web-browser brave.desktop ;;
+        3) xdg-settings set default-web-browser brave-browser.desktop ;;
         *) xdg-settings set default-web-browser firefox.desktop ;;
     esac
 else
