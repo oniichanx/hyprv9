@@ -1,0 +1,10 @@
+-- ==================================================
+--  Project URL: https://github.com/oniichanx
+-- ==================================================
+
+-- Disable eDP-1 (laptop panel)
+
+hl.monitor({
+    output = "eDP-1",
+    mode = "disable",
+})
