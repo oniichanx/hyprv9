@@ -392,13 +392,13 @@ if [[ $CFG == "y" ]]; then
 
     if [[ "$ISNVIDIA" == true ]]; then
         # เพิ่มใน hyprland.conf
-        if ! grep -q "env_var_nvidia.conf" ~/.config/hypr/hyprland.conf 2>/dev/null; then
-            echo -e "\nsource = ~/.config/hypr/env_var_nvidia.conf" >> ~/.config/hypr/hyprland.conf
+        if ! grep -qF "env_var_nvidia.conf" ~/.config/hypr/hyprland.conf 2>/dev/null; then
+            printf '\nsource = ~/.config/hypr/env_var_nvidia.conf\n' >> ~/.config/hypr/hyprland.conf
         fi
 
         # เพิ่มใน hyprland.lua
-        if ! grep -q "env_nvidia.lua" ~/.config/hypr/hyprland.lua 2>/dev/null; then
-            echo -e '\nload_module("env_nvidia")' >> ~/.config/hypr/hyprland.lua
+        if ! grep -qF "env_nvidia.lua" ~/.config/hypr/hyprland.lua 2>/dev/null; then
+            printf '\nload_module("env_nvidia")\n' >> ~/.config/hypr/hyprland.lua
         fi
     fi
 
