@@ -109,7 +109,7 @@ local app_binds = {
   { "SUPER CTRL ALT", "B", "pkill -SIGUSR1 waybar", "toggle waybar on/off" },
   { "SUPER", "Y", "$HOME/.config/hypr/scripts/WaybarStyles.sh", "waybar styles menu" },
   { "SUPER", "T", "$HOME/.config/hypr/scripts/WaybarLayout.sh", "waybar layout menu" },
-  { "SUPER", "N", "$HOME/.config/hypr/scripts/Hyprsunset.sh toggle", "toggle night light" },
+  { "SUPER", "N", "$HOME/.config/hypr/scripts/Hyprsunset.sh toggle", "Toggle Hyprsunset - night light" },
   { "SUPER ALT", "M", "$HOME/.config/hypr/UserScripts/RofiBeats.sh", "online music" },
   { "SUPER", "U", "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh", "select wallpaper" },
   { "SUPER", "I", "$HOME/.config/hypr/UserScripts/WallpaperEffects.sh", "wallpaper effects" },

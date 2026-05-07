@@ -3,6 +3,13 @@
 # Wallust Colors for current wallpaper
 
 set -euo pipefail
+# Wallust v3/v4 compatibility
+wallust_args=()
+wallust_kitty_args=()
+# shellcheck source=/dev/null
+if [ -f "$HOME/.config/hypr/scripts/WallustConfig.sh" ]; then
+  . "$HOME/.config/hypr/scripts/WallustConfig.sh"
+fi
 
 # Inputs and paths
 passed_path="${1:-}"
@@ -118,7 +125,7 @@ wait_for_templates() {
 # Run wallust (silent) to regenerate templates defined in ~/.config/wallust/wallust.toml
 # -s is used in this repo to keep things quiet and avoid extra prompts
 start_ts=$(date +%s)
-wallust run -s "$wallpaper_path" || true
+wallust "${wallust_args[@]}" run -s "$wallpaper_path" || true
 wallust_targets=(
   "$HOME/.config/waybar/wallust/colors-waybar.css"
   "$HOME/.config/rofi/wallust/colors-rofi.rasi"
@@ -147,6 +154,12 @@ fi
 # Run kitty-only wallust config to keep terminal palette separate
 run_wallust_with_config() {
   local cfg="$1"
+  # Wallust v4: prefer config-file flag via WallustConfig.sh
+  if [ "${#wallust_kitty_args[@]}" -gt 0 ]; then
+    wallust "${wallust_kitty_args[@]}" run -s "$wallpaper_path" || true
+    return
+  fi
+  # Wallust v3: try -c, fall back to env var
   if wallust run --help 2>&1 | grep -q -E '(^|[[:space:]])-c([,[:space:]]|$)|--config'; then
     wallust run -s -c "$cfg" "$wallpaper_path" || true
   else
@@ -155,6 +168,9 @@ run_wallust_with_config() {
 }
 
 kitty_cfg="$HOME/.config/wallust/wallust-kitty.toml"
+if [ "${#wallust_kitty_args[@]}" -gt 0 ]; then
+  kitty_cfg="$HOME/.config/wallust/wallust-kitty-v4.toml"
+fi
 (
   if [ -f "$kitty_cfg" ]; then
     kitty_ts=$(date +%s)
