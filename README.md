@@ -723,7 +723,7 @@ PROTON_USE_NTSYNC=1 %command%
   <summary><strong> If You don't likes SDDM You can use it </strong></summary>
 
 ---
-This project https://github.com/Darkkal44/qylock is crazy or https://github.com/Timeking23/sddm-ddr-theme
+This project https://github.com/Darkkal44/qylock is crazy. or https://github.com/Timeking23/sddm-ddr-theme
 
 - DEPENDENCIES
 ```
@@ -739,8 +739,8 @@ cd qylock/themes/
 ```
 mv whateveryoulike/ /usr/share/sddm/themes/
 ```
-- to change the theme you need to config manual in /etc/sddm.conf.d/10-theme.conf
-change Current=sdt to same a name of folder you copy sddm theme
+- to change the theme you need to config manual in `/etc/sddm.conf.d/10-theme.conf`
+change `Current=sdt` to same a name of folder you copy sddm theme
 ```
 sudo nano /etc/sddm.conf.d/10-theme.conf
 ```
