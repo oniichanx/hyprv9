@@ -725,7 +725,7 @@ PROTON_USE_NTSYNC=1 %command%
 ---
 Using this project https://github.com/Darkkal44/qylock this crazy
 
-DEPENDENCIES
+- DEPENDENCIES
 ```
 yay -S qt6-5compat qt6-multimedia qt6-multimedia-ffmpeg
 ```
@@ -735,15 +735,16 @@ git clone https://github.com/Darkkal44/qylock.git
 ```
 cd qylock/themes/
 ```
-copy sddm theme to /usr/share/sddm/themes/
+- copy sddm theme to /usr/share/sddm/themes/
 ```
 mv whateveryoulike/ /usr/share/sddm/themes/
 ```
-to change the theme you need to config manual in /etc/sddm.conf.d/10-theme.conf
+- to change the theme you need to config manual in /etc/sddm.conf.d/10-theme.conf
 change Current=sdt to same a name of folder you copy sddm theme
 ```
 sudo nano /etc/sddm.conf.d/10-theme.conf
 ```
+- Done
 
 ---
 
