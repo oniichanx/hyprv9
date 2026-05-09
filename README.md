@@ -723,7 +723,7 @@ PROTON_USE_NTSYNC=1 %command%
   <summary><strong> If You don't likes SDDM You can use it </strong></summary>
 
 ---
-Using this project https://github.com/Darkkal44/qylock this crazy
+This project https://github.com/Darkkal44/qylock is crazy or https://github.com/Timeking23/sddm-ddr-theme
 
 - DEPENDENCIES
 ```
