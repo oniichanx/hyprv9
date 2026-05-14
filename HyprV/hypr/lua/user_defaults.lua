@@ -5,7 +5,12 @@ local editor = os.getenv("EDITOR")
 if editor == nil or editor == "" then
   editor = "nano"
 end
+local visual = os.getenv("VISUAL")
+if visual == nil then
+  visual = ""
+end
 ONIICHANX_DEFAULTS.edit = editor
+ONIICHANX_DEFAULTS.visual = visual
 ONIICHANX_DEFAULTS.term = "kitty"
 ONIICHANX_DEFAULTS.files = "thunar"
 ONIICHANX_DEFAULTS.search_engine = "https://www.google.com/search?q={}"
