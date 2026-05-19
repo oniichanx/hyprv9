@@ -48,6 +48,7 @@ fi
 configs="$hypr_dir/configs"
 configs2="$hypr_dir/UserConfigs"
 UserConfigs="$hypr_dir/UserConfigs"
+lua_configs="$hypr_dir/lua"
 rofi_theme="$HOME/.config/rofi/config-edit.rasi"
 msg=' ⁉️ Choose what to do ⁉️'
 iDIR="$HOME/.config/swaync/images"
@@ -301,7 +302,7 @@ main() {
         "Edit User ENV variables")
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$UserConfigs/user_env.lua"; else file="$hypr_dir/env_var.conf"; fi ;;
         "Edit User Layer Rules (overlay)")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$(resolve_system_lua_file layer_rules.lua)"; else file="$UserConfigs/LayerRules.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/layer_rules.lua"; else file="$UserConfigs/LayerRules.conf"; fi ;;
         "Edit User Default Window Rules")
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/window_rules.lua"; else file="$configs2/WindowRulesUser.conf"; fi ;;
         "Edit User Default Monitors")
