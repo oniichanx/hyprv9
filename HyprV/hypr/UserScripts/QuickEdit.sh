@@ -256,6 +256,7 @@ menu() {
     cat <<EOF
 --- USER CUSTOMIZATIONS ---
 Edit User Defaults
+Edit User Keybinds
 Edit User Default Monitors
 Edit User ENV variables
 Edit User Layer Rules (overlay)
