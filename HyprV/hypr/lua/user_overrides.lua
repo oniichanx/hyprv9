@@ -1,14 +1,39 @@
--- Loads split user-editable Lua override files from ~/.config/hypr/UserConfigs.
--- Files are loaded in this order so behavior is predictable.
-local configHome = os.getenv("XDG_CONFIG_HOME") or ((os.getenv("HOME") or "") .. "/.config")
+-- Loads split system/user-editable Lua override files.
+-- System files are loaded from ~/.config/hypr/configs (with UserConfigs fallback for legacy setups).
+local configHome = os.getenv("XDG_CONFIG_HOME") or ((os.getenv("HOME") or "") .. "/.config")  
+local hyprDir = configHome .. "/hypr"
+local systemDir = hyprDir .. "/configs"
 local userDir = configHome .. "/hypr/UserConfigs"
-local files = {
+
+local function load_optional(path)
+  local ok, err = pcall(dofile, path)
+  if ok then
+    return true
+  end
+  if err and tostring(err):find("No such file or directory", 1, true) == nil then
+    print("[WARN] Unable to load user override file " .. path .. ": " .. tostring(err))
+  end
+  return false
+end
+
+local system_files = {
   "system_env.lua",
   "system_startup.lua",
   "system_window_rules.lua",
+  "system_layer_rules.lua",
   "system_keybinds.lua",
   "system_settings.lua",
   "system_laptops.lua",
+}
+for _, file in ipairs(system_files) do
+  local primary = systemDir .. "/" .. file
+  local legacy = userDir .. "/" .. file
+  if not load_optional(primary) then
+    load_optional(legacy)
+  end
+end
+
+local user_files = {
   "user_env.lua",
   "user_startup.lua",
   "user_window_rules.lua",
@@ -20,12 +45,9 @@ local files = {
   "user_laptops.lua",
   "user_overrides.lua", -- legacy single-file support
 }
-for _, file in ipairs(files) do
+for _, file in ipairs(user_files) do
   local path = userDir .. "/" .. file
-  local ok, err = pcall(dofile, path)
-  if not ok and err and tostring(err):find("No such file or directory", 1, true) == nil then
-    print("[WARN] Unable to load user override file " .. path .. ": " .. tostring(err))
-  end
+  load_optional(path)
 end
 
 -- Legacy compatibility: import UserKeybinds.conf when user_keybinds.lua is missing.
@@ -64,8 +86,8 @@ do
       local vars = {}
       local raw_lines = {}
       local configDir = configHome .. "/hypr/configs"
-      local defaultsFile = userDir .. "/Default-Apps.conf"
-      local keybindsFile = configDir .. "/KeyBinds.conf"
+      local defaultsFile = userDir .. "/01-UserDefaults.conf"
+      local keybindsFile = configDir .. "/Keybinds.conf"
       local systemSettingsFile = configDir .. "/SystemSettings.conf"
 
       load_vars_from_file(systemSettingsFile, vars)

@@ -16,7 +16,8 @@ fi
 
 # Resolve defaults file used to get terminal/editor values
 config_file="$hypr_dir/UserConfigs/Default-Apps.conf"
-lua_defaults_file="$hypr_dir/lua/user_defaults.lua"
+lua_defaults_file="$hypr_dir/UserConfigs/user_defaults.lua"
+legacy_lua_defaults_file="$hypr_dir/lua/user_defaults.lua"
 term="${term:-${TERM:-kitty}}"
 edit="${edit:-${EDITOR:-nano}}"
 visual="${visual:-${VISUAL:-}}"
@@ -25,21 +26,27 @@ if [[ "$hypr_config_mode" == "conf" && -f "$config_file" ]]; then
     tmp_config_file=$(mktemp)
     sed 's/^\$//g; s/ = /=/g' "$config_file" > "$tmp_config_file"
     source "$tmp_config_file"
-elif [[ "$hypr_config_mode" == "lua" && -f "$lua_defaults_file" ]]; then
-    lua_term=$(sed -n 's/^[[:space:]]*ONIICHANX_DEFAULTS\.term[[:space:]]*=[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$lua_defaults_file" | tail -n1)
-    lua_edit=$(sed -n 's/^[[:space:]]*ONIICHANX_DEFAULTS\.edit[[:space:]]*=[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$lua_defaults_file" | tail -n1)
-    lua_visual=$(sed -n 's/^[[:space:]]*ONIICHANX_DEFAULTS\.visual[[:space:]]*=[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$lua_defaults_file" | tail -n1)
-    [[ -n "$lua_term" ]] && term="$lua_term"
-    [[ -n "$lua_edit" ]] && edit="$lua_edit"
-    [[ -n "$lua_visual" ]] && visual="$lua_visual"
-fi
+elif [[ "$hypr_config_mode" == "lua" ]]; then
+    defaults_source=""
+    if [[ -f "$lua_defaults_file" ]]; then
+        defaults_source="$lua_defaults_file"
+    elif [[ -f "$legacy_lua_defaults_file" ]]; then
+        defaults_source="$legacy_lua_defaults_file"
+    fi
+    if [[ -n "$defaults_source" ]]; then
+        lua_term=$(sed -n 's/^[[:space:]]*ONIICHANX_DEFAULTS\.term[[:space:]]*=[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$defaults_source" | tail -n1)
+        lua_edit=$(sed -n 's/^[[:space:]]*ONIICHANX_DEFAULTS\.edit[[:space:]]*=[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$defaults_source" | tail -n1)
+        lua_visual=$(sed -n 's/^[[:space:]]*ONIICHANX_DEFAULTS\.visual[[:space:]]*=[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$defaults_source" | tail -n1)
+        [[ -n "$lua_term" ]] && term="$lua_term"
+        [[ -n "$lua_edit" ]] && edit="$lua_edit"
+        [[ -n "$lua_visual" ]] && visual="$lua_visual"
+    fi
 # ##################################### #
 
 # variables
 configs="$hypr_dir/configs"
 configs2="$hypr_dir/UserConfigs"
 UserConfigs="$hypr_dir/UserConfigs"
-lua_configs="$hypr_dir/lua"
 rofi_theme="$HOME/.config/rofi/config-edit.rasi"
 msg=' ⁉️ Choose what to do ⁉️'
 iDIR="$HOME/.config/swaync/images"
@@ -78,6 +85,25 @@ is_tui_editor() {
             ;;
     esac
     return 1
+}
+resolve_system_lua_file() {
+    local file_name="$1"
+    local preferred="$configs/$file_name"
+    local legacy="$UserConfigs/$file_name"
+    if [[ -f "$preferred" || ! -f "$legacy" ]]; then
+        printf '%s' "$preferred"
+    else
+        printf '%s' "$legacy"
+    fi
+}
+resolve_user_defaults_lua_file() {
+    local preferred="$UserConfigs/user_defaults.lua"
+    local legacy="$hypr_dir/lua/user_defaults.lua"
+    if [[ -f "$preferred" || ! -f "$legacy" ]]; then
+        printf '%s' "$preferred"
+    else
+        printf '%s' "$legacy"
+    fi
 }
 # Function to toggle Rainbow Borders script availability and refresh UI components
 toggle_rainbow_borders() {
