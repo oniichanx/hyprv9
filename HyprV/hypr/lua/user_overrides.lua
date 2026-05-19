@@ -86,8 +86,8 @@ do
       local vars = {}
       local raw_lines = {}
       local configDir = configHome .. "/hypr/configs"
-      local defaultsFile = userDir .. "/01-UserDefaults.conf"
-      local keybindsFile = configDir .. "/Keybinds.conf"
+      local defaultsFile = userDir .. "/Default-Apps.conf"
+      local keybindsFile = configDir .. "/KeyBinds.conf"
       local systemSettingsFile = configDir .. "/SystemSettings.conf"
 
       load_vars_from_file(systemSettingsFile, vars)
