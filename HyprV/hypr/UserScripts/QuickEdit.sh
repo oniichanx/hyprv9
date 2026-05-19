@@ -296,9 +296,9 @@ main() {
     # Map choices to corresponding files
     case "$choice" in
         "Edit User Defaults")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/user_defaults.lua"; else file="$UserConfigs/Default-Apps.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$(resolve_user_defaults_lua_file)"; else file="$UserConfigs/Default-Apps.conf"; fi ;;
         "Edit User ENV variables")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/env.lua"; else file="$hypr_dir/env_var.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$UserConfigs/user_env.lua"; else file="$hypr_dir/env_var.conf"; fi ;;
         "Edit User Layer Rules (overlay)")
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/layer_rules.lua"; else file="$UserConfigs/LayerRules.conf"; fi ;;
         "Edit User Default Window Rules")
