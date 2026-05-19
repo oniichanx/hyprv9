@@ -41,6 +41,7 @@ elif [[ "$hypr_config_mode" == "lua" ]]; then
         [[ -n "$lua_edit" ]] && edit="$lua_edit"
         [[ -n "$lua_visual" ]] && visual="$lua_visual"
     fi
+fi
 # ##################################### #
 
 # variables
