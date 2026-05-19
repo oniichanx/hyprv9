@@ -224,7 +224,7 @@ bind(
   dispatch("movecurrentworkspacetomonitor", "d"),
   { description = "move workspace to down monitor" }
 )
-bind("SUPER SHIFT", "M", raw_dispatch_cmd("exit"), { description = "exit Hyprland" })
+bind("SUPER SHIFT", "M", exec_cmd("$HOME/.config/hypr/scripts/Logout.sh"), { description = "exit Hyprland" })
 bind("SUPER", "F4", dispatch("killactive", ""), { description = "close active window" })
 bind(
   "SUPER SHIFT",
@@ -437,10 +437,25 @@ bind(
 -- )
 
 -- Section: Window resize, move, swap, and grouping
-bind("SUPER SHIFT", "left", window_api.resize({ x = -50, y = 0, relative = true }), { description = "resize left (-50)" })
-bind("SUPER SHIFT", "right", window_api.resize({ x = 50, y = 0, relative = true }), { description = "resize right (+50)" })
+bind(
+  "SUPER SHIFT",
+  "left",
+  window_api.resize({ x = -50, y = 0, relative = true }),
+  { description = "resize left (-50)" }
+)
+bind(
+  "SUPER SHIFT",
+  "right",
+  window_api.resize({ x = 50, y = 0, relative = true }),
+  { description = "resize right (+50)" }
+)
 bind("SUPER SHIFT", "up", window_api.resize({ x = 0, y = -50, relative = true }), { description = "resize up (-50)" })
-bind("SUPER SHIFT", "down", window_api.resize({ x = 0, y = 50, relative = true }), { description = "resize down (+50)" })
+bind(
+  "SUPER SHIFT",
+  "down",
+  window_api.resize({ x = 0, y = 50, relative = true }),
+  { description = "resize down (+50)" }
+)
 -- Keep legacy directional move script binds commented for rollback during Lua API migration.
 -- Native movewindow dispatch below replaces LuaMoveWindowDirectional.sh usage.
 -- bind(
@@ -574,8 +589,18 @@ bind(
 --   exec_cmd("$HOME/.config/hypr/scripts/LuaMoveWindowWorkspaceRelative.sh next"),
 --   { description = "move silently to next workspace" }
 -- )
-bind("SUPER CTRL", "bracketleft", dispatch("movetoworkspacesilent", "-1"), { description = "move silently to previous workspace" })
-bind("SUPER CTRL", "bracketright", dispatch("movetoworkspacesilent", "+1"), { description = "move silently to next workspace" })
+bind(
+  "SUPER CTRL",
+  "bracketleft",
+  dispatch("movetoworkspacesilent", "-1"),
+  { description = "move silently to previous workspace" }
+)
+bind(
+  "SUPER CTRL",
+  "bracketright",
+  dispatch("movetoworkspacesilent", "+1"),
+  { description = "move silently to next workspace" }
+)
 -- Keep legacy scroll/period/comma workspace focus script binds commented for rollback during Lua API migration.
 -- Native workspace dispatch below replaces LuaFocusWorkspaceRelative.sh usage.
 -- bind(
