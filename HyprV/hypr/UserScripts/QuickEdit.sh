@@ -17,7 +17,7 @@ fi
 # Resolve defaults file used to get terminal/editor values
 config_file="$hypr_dir/UserConfigs/Default-Apps.conf"
 lua_defaults_file="$hypr_dir/UserConfigs/user_defaults.lua"
-term="${term:-${TERM:-kitty}}"
+term="${term:-kitty}"
 edit="${edit:-${EDITOR:-nano}}"
 visual="${visual:-${VISUAL:-}}"
 
@@ -66,8 +66,10 @@ is_tui_editor() {
     local -a cmd=("$@")
     local bin base arg
     [[ ${#cmd[@]} -eq 0 ]] && return 1
+
     bin="${cmd[0]}"
     base="$(basename "$bin")"
+
     case "$base" in
         vi|vim|nvim|nano|hx|helix|kak|micro|emacs-nox)
             return 0
@@ -83,8 +85,10 @@ is_tui_editor() {
             return 1
             ;;
     esac
+
     return 1
 }
+
 resolve_system_lua_file() {
     local file_name="$1"
     local preferred="$configs/$file_name"
@@ -95,8 +99,10 @@ resolve_system_lua_file() {
         printf '%s' "$legacy"
     fi
 }
+
 resolve_user_defaults_lua_file() {
     local preferred="$UserConfigs/user_defaults.lua"
+    printf '%s' "$preferred"
 }
 # Function to toggle Rainbow Borders script availability and refresh UI components
 toggle_rainbow_borders() {
