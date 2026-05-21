@@ -17,7 +17,6 @@ fi
 # Resolve defaults file used to get terminal/editor values
 config_file="$hypr_dir/UserConfigs/Default-Apps.conf"
 lua_defaults_file="$hypr_dir/UserConfigs/user_defaults.lua"
-legacy_lua_defaults_file="$hypr_dir/lua/user_defaults.lua"
 term="${term:-${TERM:-kitty}}"
 edit="${edit:-${EDITOR:-nano}}"
 visual="${visual:-${VISUAL:-}}"
@@ -30,8 +29,6 @@ elif [[ "$hypr_config_mode" == "lua" ]]; then
     defaults_source=""
     if [[ -f "$lua_defaults_file" ]]; then
         defaults_source="$lua_defaults_file"
-    elif [[ -f "$legacy_lua_defaults_file" ]]; then
-        defaults_source="$legacy_lua_defaults_file"
     fi
     if [[ -n "$defaults_source" ]]; then
         lua_term=$(sed -n 's/^[[:space:]]*ONIICHANX_DEFAULTS\.term[[:space:]]*=[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$defaults_source" | tail -n1)
@@ -100,12 +97,6 @@ resolve_system_lua_file() {
 }
 resolve_user_defaults_lua_file() {
     local preferred="$UserConfigs/user_defaults.lua"
-    local legacy="$hypr_dir/lua/user_defaults.lua"
-    if [[ -f "$preferred" || ! -f "$legacy" ]]; then
-        printf '%s' "$preferred"
-    else
-        printf '%s' "$legacy"
-    fi
 }
 # Function to toggle Rainbow Borders script availability and refresh UI components
 toggle_rainbow_borders() {

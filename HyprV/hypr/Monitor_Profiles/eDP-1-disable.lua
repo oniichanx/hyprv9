@@ -6,5 +6,5 @@
 
 hl.monitor({
     output = "eDP-1",
-    mode = "disable",
+    disabled = true,
 })
