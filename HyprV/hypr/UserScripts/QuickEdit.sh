@@ -43,7 +43,7 @@ fi
 
 # variables
 configs="$hypr_dir/configs"
-configs2="$hypr_dir/UserConfigs"
+#configs2="$hypr_dir/UserConfigs"
 UserConfigs="$hypr_dir/UserConfigs"
 lua_configs="$hypr_dir/lua"
 rofi_theme="$HOME/.config/rofi/config-edit.rasi"
@@ -256,8 +256,9 @@ Edit User Defaults
 Edit User Keybinds
 Edit User Default Monitors
 Edit User ENV variables
+Edit User Startup Apps (overlay)
+Edit User Window Rules (overlay)
 Edit User Layer Rules (overlay)
-Edit User Default Window Rules
 Edit User Settings
 Edit User Decorations
 Edit User Animations
@@ -301,10 +302,12 @@ main() {
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$UserConfigs/user_env.lua"; else file="$hypr_dir/env_var.conf"; fi ;;
         "Edit User Keybinds")
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$UserConfigs/user_keybinds.lua"; else file="$UserConfigs/UserKeybinds.conf"; fi ;;
+        "Edit User Startup Apps (overlay)")
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$UserConfigs/user_startup.lua"; else file="$UserConfigs/Startup_Apps.conf"; fi ;;
+        "Edit User Window Rules (overlay)")
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$UserConfigs/user_window_rules.lua"; else file="$UserConfigs/WindowRulesUser.conf"; fi ;;
         "Edit User Layer Rules (overlay)")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/layer_rules.lua"; else file="$UserConfigs/LayerRules.conf"; fi ;;
-        "Edit User Default Window Rules")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/window_rules.lua"; else file="$configs2/WindowRulesUser.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$UserConfigs/user_layer_rules.lua"; else file="$UserConfigs/LayerRules.conf"; fi ;;
         "Edit User Default Monitors")
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/monitors.lua"; else file="$hypr_dir/monitors.conf"; fi ;;
         "Edit User Settings")
@@ -312,25 +315,25 @@ main() {
                 file="$UserConfigs/user_settings.lua"
                 show_info "Lua mode detected. Edit UserConfigs/user_settings.lua for user settings."
             else
-                file="$configs2/SystemSettings.conf"
+                file="$UserConfigs/SystemSettings.conf"
                 show_info "Editing default settings. Copy to UserConfigs/UserSettings.conf to override."
             fi ;;
         "Edit User Decorations")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/decorations.lua"; else file="$UserConfigs/UserDecorAnimations.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$UserConfigs/user_decorations.lua"; else file="$UserConfigs/UserDecorAnimations.conf"; fi ;;
         "Edit User Animations")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/animations.lua"; else file="$hypr_dir/UserAnimations.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$UserConfigs/user_animations.lua"; else file="$hypr_dir/UserAnimations.conf"; fi ;;
         "Edit User Laptop Settings")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/laptops.lua"; else file="$UserConfigs/Laptops.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$UserConfigs/user_laptops.lua"; else file="$UserConfigs/Laptops.conf"; fi ;;
         "Edit System Default Keybinds")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/keybinds.lua"; else file="$configs2/KeyBinds.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$(resolve_system_lua_file system_keybinds.lua)"; else file="$UserConfigs/KeyBinds.conf"; fi ;;
         "Edit System Default Startup Apps")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/startup.lua"; else file="$configs2/Startup_Apps.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$(resolve_system_lua_file system_startup.lua)"; else file="$UserConfigs/Startup_Apps.conf"; fi ;;
         "Edit System Default Window Rules")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/window_rules.lua"; else file="$configs2/WindowRules.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$(resolve_system_lua_file system_window_rules.lua)"; else file="$UserConfigs/WindowRules.conf"; fi ;;
         "Edit System Default Layer Rules")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/layer_rules.lua"; else file="$configs2/LayerRules.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$(resolve_system_lua_file system_layer_rules.lua)"; else file="$UserConfigs/LayerRules.conf"; fi ;;
         "Edit System Default Settings")
-            if [[ "$hypr_config_mode" == "lua" ]]; then file="$lua_configs/settings.lua"; else file="$configs2/SystemSettings.conf"; fi ;;
+            if [[ "$hypr_config_mode" == "lua" ]]; then file="$(resolve_system_lua_file system_settings.lua)"; else file="$UserConfigs/SystemSettings.conf"; fi ;;
         "Set SDDM Wallpaper") $scriptsDir/sddm_wallpaper.sh --normal ;;
         "Choose Kitty Terminal Theme") $scriptsDir/Kitty_themes.sh ;;
         "Choose Ghostty Terminal Theme") $scriptsDir/Ghostty_themes.sh ;;

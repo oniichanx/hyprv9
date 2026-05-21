@@ -351,6 +351,8 @@ if [[ $CFG == "y" ]]; then
     # [hyprland] cp (ไม่ใช่ ln) เพราะ hyprland.conf ถูก append nvidia/rog ทีหลัง
     cp -a ~/.config/HyprV/hypr/* ~/.config/hypr/ 2>/dev/null || true
 
+    cp -a ~/.config/HyprV/hypr/.luarc.json ~/.config/hypr/.luarc.json 2>/dev/null || true
+
     # [rofi] cp — config.rasi + themes/ + launcher scripts
     cp -r ~/.config/HyprV/rofi/* ~/.config/rofi/ 2>/dev/null || true
 
