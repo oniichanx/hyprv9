@@ -2,8 +2,8 @@
 # /* ---- 💫 https://github.com/oniichanx 💫 ---- */  ##
 # Scripts for volume controls for audio and mic 
 
-iDIR="$HOME/.config/HyprV/swaync/icons"
-sDIR="$HOME/.config/hypr/scripts"
+iDIR="${XDG_CONFIG_HOME:-$HOME/.config}/swaync/icons"
+sDIR="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts"
 
 # Get Volume
 get_volume() {

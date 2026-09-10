@@ -5,35 +5,66 @@
 # Kill yad to not interfere with this binds
 pkill yad || true
 
-# Check if rofi is already running
+# check if rofi is already running
 if pidof rofi > /dev/null; then
   pkill rofi
 fi
 
-# Define the config files
-keybinds_conf="$HOME/.config/hypr/UserConfigs/KeyBinds.conf"
-user_keybinds_conf="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
-laptop_conf="$HOME/.config/hypr/UserConfigs/Laptop.conf"
-rofi_theme="$HOME/.config/rofi/config-keybinds.rasi"
+# define the config files
+config_home="${XDG_CONFIG_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}}"
+hypr_dir="$config_home/hypr"
+keybinds_conf="$hypr_dir/configs/Keybinds.conf"
+system_laptop_conf="$hypr_dir/configs/Laptops.conf"
+user_keybinds_conf="$hypr_dir/UserConfigs/UserKeybinds.conf"
+laptop_conf="$hypr_dir/UserConfigs/Laptops.conf"
+lua_keybinds_conf="$hypr_dir/lua/keybinds.lua"
+lua_user_keybinds="$hypr_dir/UserConfigs/user_keybinds.lua"
+lua_system_keybinds="$hypr_dir/configs/system_keybinds.lua"
+lua_legacy_system_keybinds="$hypr_dir/UserConfigs/system_keybinds.lua"
+lua_overrides="$hypr_dir/UserConfigs/user_overrides.lua"
+rofi_theme="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/config-keybinds.rasi"
 msg='☣️ NOTE ☣️: Clicking with Mouse or Pressing ENTER will have NO function'
 
-# combine the contents of the keybinds files and filter for keybinds
-keybinds=$(cat "$keybinds_conf" "$user_keybinds_conf" | grep -E '^(bind|bindl|binde|bindm)')
-
-# check if laptop.conf exists and add its keybinds if present
-if [[ -f "$laptop_conf" ]]; then
-    laptop_binds=$(grep -E '^(bind|bindl|binde|bindm' "$laptop_conf")
-    keybinds+=$'\n'"$laptop_binds"
+# detect active Hyprland config mode (Lua entrypoint vs legacy .conf includes)
+lua_entry="$hypr_dir/hyprland.lua"
+legacy_lua_entry="$config_home/hyprland.lua"
+if [[ -f "$lua_entry" || -f "$legacy_lua_entry" ]]; then
+  hypr_config_mode="lua"
+else
+  hypr_config_mode="conf"
 fi
 
-# check for any keybinds to display
-if [[ -z "$keybinds" ]]; then
-    echo "no keybinds found."
-    exit 1
+# collect raw bind lines from available files
+if [[ "$hypr_config_mode" == "lua" ]]; then
+  files=("$lua_keybinds_conf")
+  if [[ -f "$lua_system_keybinds" ]]; then
+    files+=("$lua_system_keybinds")
+  elif [[ -f "$lua_legacy_system_keybinds" ]]; then
+    files+=("$lua_legacy_system_keybinds")
+  fi
+  [[ -f "$lua_overrides" ]] && files+=("$lua_overrides")
+  [[ -f "$lua_user_keybinds" ]] && files+=("$lua_user_keybinds")
+else
+  files=("$keybinds_conf")
+  [[ -f "$system_laptop_conf" ]] && files+=("$system_laptop_conf")
+  [[ -f "$laptop_conf" ]] && files+=("$laptop_conf")
+  [[ -f "$user_keybinds_conf" ]] && files+=("$user_keybinds_conf")
 fi
 
-# replace $mainmod with super in the displayed keybinds for rofi
-display_keybinds=$(echo "$keybinds" | sed 's/\$mainMod/SUPER/g')
+# Parse binds using the python script for speed
+# The last argument must be the user config for override logic to work correctly
+display_keybinds=$("${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts/keybinds_parser.py" "${files[@]}")
 
-# use rofi to display the keybinds with the modified content
-echo "$display_keybinds" | rofi -dmenu -i -config "$rofi_theme" -mesg "$msg"
+# Check for suggestions file created by python script
+if [[ -f "/tmp/hypr_keybind_suggestions_file" ]]; then
+  suggestions_file=$(cat "/tmp/hypr_keybind_suggestions_file")
+  rm "/tmp/hypr_keybind_suggestions_file"
+  if [[ -n "$suggestions_file" && -f "$suggestions_file" ]]; then
+     count=$(wc -l < "$suggestions_file")
+     msg="$msg | Overrides missing unbind: $count (suggestions: $suggestions_file)"
+  fi
+fi
+
+# use rofi to display the keybinds
+"${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts/RofiFocusedWallpaperLink.sh" >/dev/null 2>&1 || true
+printf '%s\n' "$display_keybinds" | rofi -dmenu -i -config "$rofi_theme" -mesg "$msg"

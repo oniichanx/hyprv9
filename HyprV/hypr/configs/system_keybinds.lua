@@ -381,7 +381,7 @@ end
 -- Converted from configs/Keybinds.conf
 bind(
   "SUPER",
-  "SPACE",
+  "D",
   exec_cmd("pkill rofi || true; $HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show drun -modi drun,filebrowser,run,window -config $HOME/.config/rofi/config.rasi"),
   { description = "app launcher" }
 )
@@ -503,17 +503,17 @@ bind(
   { description = "Toggle Hyprsunset - night light" }
 )
 bind("SUPER ALT", "M", exec_cmd("$HOME/.config/hypr/UserScripts/RofiBeats.sh"), { description = "online music" })
-bind("SUPER", "U", exec_cmd("$HOME/.config/hypr/UserScripts/WallpaperSelect.sh"), { description = "select wallpaper" })
+bind("SUPER", "U", exec_cmd("$HOME/.config/hypr/scripts/WallpaperSelect.sh"), { description = "select wallpaper" })
 bind(
   "SUPER ALT",
   "W",
-  exec_cmd("$HOME/.config/hypr/UserScripts/WallpaperEffects.sh"),
+  exec_cmd("$HOME/.config/hypr/scripts/WallpaperEffects.sh"),
   { description = "wallpaper effects" }
 )
 bind(
   "CTRL ALT",
   "W",
-  exec_cmd("$HOME/.config/hypr/UserScripts/WallpaperRandom.sh"),
+  exec_cmd("$HOME/.config/hypr/scripts/WallpaperRandom.sh"),
   { description = "random wallpaper" }
 )
 bind("SUPER CTRL", "O", exec_cmd("$HOME/.config/hypr/scripts/ToggleOpacity.sh"), { description = "toggle active window opacity" })

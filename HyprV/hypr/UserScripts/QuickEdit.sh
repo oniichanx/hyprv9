@@ -183,6 +183,7 @@ rainbow_borders_menu() {
     # Build options and prompt
     local options="Disable Rainbow Borders\nWallust Color\nOriginal Rainbow\nGradient Flow"
     local choice
+    "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts/RofiFocusedWallpaperLink.sh" >/dev/null 2>&1 || true
     choice=$(printf "%b" "$options" | rofi -i -dmenu -config "$rofi_theme" -mesg "Rainbow Borders: current = $current_display")
 
     [[ -z "$choice" ]] && return
@@ -263,6 +264,7 @@ Edit User Settings
 Edit User Decorations
 Edit User Animations
 Edit User Laptop Settings
+Select Hyprview Layout
 --- SYSTEM DEFAULTS  ---
 Edit System Default Keybinds
 Edit System Default Startup Apps
@@ -270,6 +272,7 @@ Edit System Default Window Rules
 Edit System Default Layer Rules
 Edit System Default Settings
 --- UTILITIES ---
+Change Starship Prompt
 Set SDDM Wallpaper
 Choose Kitty Terminal Theme
 Choose Ghostty Terminal Theme
@@ -278,6 +281,7 @@ Configure Workspace Rules (nwg-displays)
 GTK Settings (nwg-look)
 QT Apps Settings (qt6ct)
 QT Apps Settings (qt5ct)
+Set Hyprlock Wallpaper
 Choose Hyprland Animations
 Choose Monitor Profiles
 Choose Rofi Themes
@@ -324,6 +328,7 @@ main() {
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$UserConfigs/user_animations.lua"; else file="$hypr_dir/UserAnimations.conf"; fi ;;
         "Edit User Laptop Settings")
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$UserConfigs/user_laptops.lua"; else file="$UserConfigs/Laptops.conf"; fi ;;
+        "Select Hyprview Layout") "$scriptsDir/select-hyprview-layout.sh" ;;
         "Edit System Default Keybinds")
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$(resolve_system_lua_file system_keybinds.lua)"; else file="$UserConfigs/KeyBinds.conf"; fi ;;
         "Edit System Default Startup Apps")
@@ -334,6 +339,7 @@ main() {
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$(resolve_system_lua_file system_layer_rules.lua)"; else file="$UserConfigs/LayerRules.conf"; fi ;;
         "Edit System Default Settings")
             if [[ "$hypr_config_mode" == "lua" ]]; then file="$(resolve_system_lua_file system_settings.lua)"; else file="$UserConfigs/SystemSettings.conf"; fi ;;
+        "Change Starship Prompt") "$scriptsDir/ChangeStarshipPrompt.sh" ;;
         "Set SDDM Wallpaper") $scriptsDir/sddm_wallpaper.sh --normal ;;
         "Choose Kitty Terminal Theme") $scriptsDir/Kitty_themes.sh ;;
         "Choose Ghostty Terminal Theme") $scriptsDir/Ghostty_themes.sh ;;
@@ -367,7 +373,14 @@ main() {
                 exit 1
             fi
             qt5ct ;;
-        "Choose Hyprland Animations") $UserScripts/Animations.sh ;;
+        "Set Hyprlock Wallpaper" | "Set Hyprlock paper")
+          if [[ -n "$quick_settings_monitor" ]]; then
+            "$scriptsDir/HyprlockWallpaperSelect.sh" "$quick_settings_monitor"
+          else
+           "$scriptsDir/HyprlockWallpaperSelect.sh"
+          fi
+          ;;
+        "Choose Hyprland Animations") $scriptsDir/Animations.sh ;;
         "Choose Monitor Profiles") $scriptsDir/MonitorProfiles.sh ;;
         "Choose Rofi Themes") $scriptsDir/RofiThemeSelector.sh ;;
         "Search for Keybinds") $scriptsDir/KeyBinds.sh ;;

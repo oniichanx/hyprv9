@@ -2,7 +2,7 @@
 # /* ---- 💫 https://github.com/oniichanx 💫 ---- */  ##
 # Script for Monitor backlights (if supported) using brightnessctl
 
-iDIR="$HOME/.config/HyprV/swaync/images"
+iDIR="${XDG_CONFIG_HOME:-$HOME/.config}/swaync/icons"
 notification_timeout=1000
 step=10  # INCREASE/DECREASE BY THIS VALUE
 

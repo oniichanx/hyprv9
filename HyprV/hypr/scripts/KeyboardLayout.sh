@@ -2,8 +2,8 @@
 # /* ---- 💫 https://github.com/oniichanx 💫 ---- */  ##
 # This is for changing kb_layouts. Set kb_layouts in "$HOME/.config/hypr/UserConfigs/UserSettings.conf"
 
-notif_icon="$HOME/.config/swaync/images/ja.png"
-SCRIPTSDIR="$HOME/.config/hypr/scripts"
+notif_icon="${XDG_CONFIG_HOME:-$HOME/.config}/swaync/images/ja.png"
+SCRIPTSDIR="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts"
 
 # Refined ignore list with patterns or specific device names
 ignore_patterns=(

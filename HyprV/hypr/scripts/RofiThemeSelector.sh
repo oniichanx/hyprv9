@@ -2,12 +2,12 @@
 # /* ---- 💫 https://github.com/oniichanx 💫 ---- */  ##
 # Script for adding a selected theme to the Rofi config
 
-# Define directories and variables
-ROFI_THEMES_DIR_CONFIG="$HOME/.config/rofi/themes"
+# --- Configuration ---
+ROFI_THEMES_DIR_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/themes"
 ROFI_THEMES_DIR_LOCAL="$HOME/.local/share/rofi/themes"
-ROFI_CONFIG_FILE="$HOME/.config/rofi/config.rasi"
-ROFI_THEME_FOR_THIS_SCRIPT="$HOME/.config/rofi/config-rofi-theme.rasi"
-IDIR="$HOME/.config/swaync/images"
+ROFI_CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/config.rasi"
+ROFI_THEME_FOR_THIS_SCRIPT="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/config-rofi-theme.rasi" # A separate rofi theme for the picker itself
+IDIR="${XDG_CONFIG_HOME:-$HOME/.config}/swaync/images"                                     # For notifications
 
 # --- Helper Functions ---
 
@@ -121,6 +121,7 @@ while true; do
   rofi_input_list_trimmed="${rofi_input_list%\\n}"
 
   # Launch Rofi and get user's choice
+  "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts/RofiFocusedWallpaperLink.sh" >/dev/null 2>&1 || true
   chosen_index_from_rofi=$(echo -e "$rofi_input_list_trimmed" |
     rofi -dmenu -i \
       -format 'i' \

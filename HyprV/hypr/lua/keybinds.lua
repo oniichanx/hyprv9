@@ -52,6 +52,12 @@ keybind_helpers.unbind_default_keys()
 -- ==================================================
 -- Section: Application launchers and utility scripts
 local app_binds = {
+  {
+    "SUPER",
+    "D",
+    "pkill rofi || true; $HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show drun -modi drun,filebrowser,run,window -config $HOME/.config/hypr/rofi/config.rasi",
+    "app launcher",
+  },
   { "SUPER", "SPACE", "pkill rofi || true && rofi -show drun -modi drun,filebrowser,run,window", "app launcher" },
   { "SUPER", "B", 'xdg-open "https://"', "open default browser" },
   { "SUPER", "Q", "kitty", "Open terminal" },
@@ -61,7 +67,12 @@ local app_binds = {
   { "SUPER ALT", "R", "$HOME/.config/hypr/scripts/Refresh.sh", "refresh bar and menus" },
   { "SUPER SHIFT", "E", "$HOME/.config/hypr/scripts/RofiEmoji.sh", "emoji menu" },
   { "SUPER", "S", "$HOME/.config/hypr/scripts/RofiSearch.sh", "web search" },
-  { "SUPER CTRL", "S", "rofi -show window", "window switcher" },
+  {
+    "SUPER CTRL",
+    "S",
+    "$HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show window -config $HOME/.config/hypr/rofi/config.rasi",
+    "window switcher",
+  },
   { "SUPER ALT", "O", "$HOME/.config/hypr/scripts/ChangeBlur.sh", "toggle blur" },
   { "SUPER ALT", "G", "$HOME/.config/hypr/scripts/GameMode.sh", "toggle game mode" },
   { "SUPER ALT", "L", "$HOME/.config/hypr/scripts/ChangeLayout.sh toggle", "toggle layouts" },
@@ -93,6 +104,7 @@ local app_binds = {
     "Hyprshot Screen Capture",
   },
   { "SUPER ALT", "V", "$HOME/.config/hypr/scripts/Float-all-Windows.sh", "Float all windows" },
+  { "SUPER CTRL", "SPACE", "$HOME/.config/hypr/scripts/float.all.samesize.lua", "Float all windows same size" },
   { "SUPER SHIFT", "Return", "$HOME/.config/hypr/scripts/Dropterminal.sh kitty", "DropDown terminal" },
   {
     "SUPER ALT",
@@ -111,12 +123,12 @@ local app_binds = {
   { "SUPER", "T", "$HOME/.config/hypr/scripts/WaybarLayout.sh", "waybar layout menu" },
   { "SUPER", "N", "$HOME/.config/hypr/scripts/Hyprsunset.sh toggle", "Toggle Hyprsunset - night light" },
   { "SUPER ALT", "M", "$HOME/.config/hypr/UserScripts/RofiBeats.sh", "online music" },
-  { "SUPER", "U", "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh", "select wallpaper" },
-  { "SUPER", "I", "$HOME/.config/hypr/UserScripts/WallpaperEffects.sh", "wallpaper effects" },
-  { "CTRL ALT", "W", "$HOME/.config/hypr/UserScripts/WallpaperRandom.sh", "random wallpaper" },
+  { "SUPER", "U", "$HOME/.config/hypr/scripts/WallpaperSelect.sh", "select wallpaper" },
+  { "SUPER ALT", "W", "$HOME/.config/hypr/scripts/WallpaperEffects.sh", "wallpaper effects" },
+  { "CTRL ALT", "W", "$HOME/.config/hypr/scripts/WallpaperRandom.sh", "random wallpaper" },
   { "SUPER SHIFT", "K", "$HOME/.config/hypr/scripts/KeyBinds.sh", "search keybinds" },
   { "SUPER ALT", "H", "$HOME/.config/hypr/scripts/Animations.sh", "animations menu" },
-  { "SUPER SHIFT", "O", "$HOME/.config/hypr/UserScripts/ZshChangeTheme.sh", "change oh-my-zsh theme" },
+  { "SUPER SHIFT", "O", "$HOME/.config/hypr/scripts/ZshChangeTheme.sh", "change oh-my-zsh theme" },
   { "SUPER ALT", "C", "$HOME/.config/hypr/UserScripts/RofiCalc.sh", "calculator" },
 }
 for _, app in ipairs(app_binds) do
@@ -234,6 +246,7 @@ bind(
 )
 bind("CTRL ALT", "L", exec_cmd("$HOME/.config/hypr/scripts/LockScreen.sh"), { description = "lock screen" })
 bind("SUPER", "M", exec_cmd("$HOME/.config/hypr/scripts/Wlogout.sh"), { description = "powermenu" })
+bind("CTRL ALT", "D", exec_cmd("$HOME/.config/hypr/scripts/Dock.sh"), { description = "toggle dock" })
 bind("SUPER SHIFT", "N", exec_cmd("swaync-client -t -sw"), { description = "notification panel" })
 bind(
   "SUPER ALT",
