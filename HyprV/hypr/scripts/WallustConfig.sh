@@ -19,7 +19,7 @@ wallust_prepare_args() {
   wallust_kitty_args=()
 
   command -v wallust >/dev/null 2>&1 || return 0
-  local wallust_cfg_dir="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallust"
+  local wallust_cfg_dir="${XDG_CONFIG_HOME:-$HOME/.config}/HyprV/wallust"
   local legacy_wallust_cfg_dir="${XDG_CONFIG_HOME:-$HOME/.config}/wallust"
   local wallust_templates_dir="$wallust_cfg_dir/templates"
   local v3_cfg=""

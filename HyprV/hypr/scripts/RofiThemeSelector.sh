@@ -3,10 +3,10 @@
 # Script for adding a selected theme to the Rofi config
 
 # --- Configuration ---
-ROFI_THEMES_DIR_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/themes"
+ROFI_THEMES_DIR_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/themes"
 ROFI_THEMES_DIR_LOCAL="$HOME/.local/share/rofi/themes"
-ROFI_CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/config.rasi"
-ROFI_THEME_FOR_THIS_SCRIPT="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/config-rofi-theme.rasi" # A separate rofi theme for the picker itself
+ROFI_CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/config.rasi"
+ROFI_THEME_FOR_THIS_SCRIPT="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/config-rofi-theme.rasi" # A separate rofi theme for the picker itself
 IDIR="${XDG_CONFIG_HOME:-$HOME/.config}/swaync/images"                                     # For notifications
 
 # --- Helper Functions ---

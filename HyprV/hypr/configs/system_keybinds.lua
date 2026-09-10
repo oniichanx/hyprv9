@@ -381,7 +381,7 @@ end
 -- Converted from configs/Keybinds.conf
 bind(
   "SUPER",
-  "D",
+  "SPACE",
   exec_cmd("pkill rofi || true; $HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show drun -modi drun,filebrowser,run,window -config $HOME/.config/rofi/config.rasi"),
   { description = "app launcher" }
 )

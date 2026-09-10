@@ -96,7 +96,7 @@ else
   cache_dir="$HOME/.cache/swww/"
   cache_dir_fallback="$HOME/.cache/awww/"
 fi
-rofi_link="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/.current_wallpaper"
+rofi_link="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/.current_wallpaper"
 wallpaper_current="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallpaper_effects/.wallpaper_current"
 read_cached_wallpaper() {
   local cache_file="$1"
@@ -233,7 +233,7 @@ wait_for_templates() {
 start_ts=$(date +%s)
 wallust_targets=(
   "${XDG_CONFIG_HOME:-$HOME/.config}/waybar/wallust/colors-waybar.css"
-  "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/wallust/colors-rofi.rasi"
+  "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/wallust/colors-rofi.rasi"
   "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallust/wallust-hyprland.conf"
 )
 for target in "${wallust_targets[@]}"; do
@@ -263,7 +263,7 @@ ensure_wallust_waybar_style
 reload_running_cava_colors
 
 # Normalize Rofi selection colors to a brighter accent and readable foreground
-rofi_colors="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/wallust/colors-rofi.rasi"
+rofi_colors="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/wallust/colors-rofi.rasi"
 if [ -f "$rofi_colors" ]; then
   accent_hex=$(sed -n 's/^\s*color13:\s*\(#[0-9A-Fa-f]\{6\}\).*/\1/p' "$rofi_colors" | head -n1)
   [ -z "$accent_hex" ] && accent_hex=$(sed -n 's/^\s*color12:\s*\(#[0-9A-Fa-f]\{6\}\).*/\1/p' "$rofi_colors" | head -n1)
@@ -342,9 +342,9 @@ apply_hypr_gap_fallback() {
 # Apply Hyprland updates immediately to avoid delayed border/gap changes.
 reload_hypr_preserve_layout
 
-kitty_cfg="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallust/wallust-kitty.toml"
+kitty_cfg="${XDG_CONFIG_HOME:-$HOME/.config}/wallust/wallust-kitty.toml"
 if [ "${#wallust_kitty_args[@]}" -gt 0 ]; then
-  kitty_cfg="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallust/wallust-kitty-v4.toml"
+  kitty_cfg="${XDG_CONFIG_HOME:-$HOME/.config}/wallust/wallust-kitty-v4.toml"
 fi
 (
   if [ -f "$kitty_cfg" ]; then
