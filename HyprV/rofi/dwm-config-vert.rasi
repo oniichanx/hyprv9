@@ -14,7 +14,7 @@ configuration {
   }
  }
 
-@theme "~/.config/rofi/dwm-dmenu-vert.rasi"
+@theme "~/.config/hypr/rofi/dwm-dmenu-vert.rasi"
 
 listview {
   columns: 1;

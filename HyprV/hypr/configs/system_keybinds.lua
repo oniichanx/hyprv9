@@ -7,7 +7,7 @@
 --   4) description text
 local dsp = hl.dsp or hl
 local function resolve_cmd(cmd)
-  local defaults = rawget(_G, "KOOLDOTS_DEFAULTS") or {}
+  local defaults = rawget(_G, "ONIICHANX_DEFAULTS") or {}
   local resolved_term = defaults.term or os.getenv("TERMINAL") or "kitty"
   local resolved_files = defaults.files or "thunar"
   local resolved_edit = defaults.edit or os.getenv("EDITOR") or "nano"
@@ -400,7 +400,7 @@ bind(
 )
 bind("SUPER", "C", exec_cmd("$HOME/.config/hypr/scripts/rofi-ssh-menu.sh"), { description = "SSH session manager" })
 bind(
-  "SUPER",
+  "SUPER ALT",
   "T",
   exec_cmd("$HOME/.config/hypr/scripts/ThemeChanger.sh"),
   { description = "Global theme switcher using Wallust" }

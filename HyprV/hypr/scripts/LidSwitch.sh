@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==================================================
 #  KoolDots (2026) - Laptop Lid Switch Handler
-#  Project URL: https://github.com/LinuxBeginnings
+#  Project URL: https://github.com/oniichanx
 #  License: GNU GPLv3
 #  SPDX-License-Identifier: GPL-3.0-or-later
 # ==================================================

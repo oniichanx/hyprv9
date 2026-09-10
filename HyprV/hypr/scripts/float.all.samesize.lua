@@ -1,7 +1,7 @@
 #!/usr/bin/env lua
 -- ==================================================
 --  KoolDots (2026)
---  Project URL: https://github.com/LinuxBeginnings
+--  Project URL: https://github.com/oniichanx
 --  License: GNU GPLv3
 --  SPDX-License-Identifier: GPL-3.0-or-later
 -- ==================================================
