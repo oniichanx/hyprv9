@@ -5,201 +5,552 @@
 --   2) key (e.g. "Return", "code:10", "mouse_down")
 --   3) action (exec_cmd(...) or dispatch(...))
 --   4) description text
-local keybind_helpers = nil
-do
-  local source = (debug.getinfo(1, "S") or {}).source or ""
-  local source_path = source:match("^@(.+)$")
-  local source_dir = source_path and source_path:match("^(.*)/[^/]+$") or nil
-  local home = os.getenv("HOME") or ""
-  local candidate_paths = {
-    source_dir and (source_dir .. "/keybind_helpers.lua") or nil,
-    home ~= "" and (home .. "/.config/hypr/lua/keybind_helpers.lua") or nil,
-    home ~= "" and (home .. "/.config/hypr/keybind_helpers.lua") or nil,
-  }
+local dsp = hl.dsp or hl
+local function resolve_cmd(cmd)
+  local defaults = rawget(_G, "KOOLDOTS_DEFAULTS") or {}
+  local resolved_term = defaults.term or os.getenv("TERMINAL") or "kitty"
+  local resolved_files = defaults.files or "thunar"
+  local resolved_edit = defaults.edit or os.getenv("EDITOR") or "nano"
+  local resolved_visual = defaults.visual or os.getenv("VISUAL") or ""
+  cmd = tostring(cmd)
+  cmd = cmd:gsub("%$term", resolved_term)
+  cmd = cmd:gsub("%$files", resolved_files)
+  cmd = cmd:gsub("%$edit", resolved_edit)
+  cmd = cmd:gsub("%$visual", resolved_visual)
+  return cmd
+end
 
-  local tried_paths = {}
-  for _, helper_path in ipairs(candidate_paths) do
-    if helper_path then
-      table.insert(tried_paths, helper_path)
-      local f = io.open(helper_path, "r")
-      if f then
-        f:close()
-        local loaded_ok, loaded_helpers = pcall(dofile, helper_path)
-        if loaded_ok and type(loaded_helpers) == "table" and loaded_helpers.unbind_default_keys then
-          keybind_helpers = loaded_helpers
-          break
+local function exec_cmd(cmd)
+  local resolved = resolve_cmd(cmd)
+  if dsp and dsp.exec_cmd then
+    return dsp.exec_cmd(resolved)
+  end
+  return function()
+    hl.exec_cmd(resolved)
+  end
+end
+
+local function shell_quote(value)
+  return "'" .. tostring(value):gsub("'", "'\\''") .. "'"
+end
+
+local function raw_dispatch_cmd(command)
+  if dsp and dsp.exec_raw then
+    return function()
+      hl.dispatch(dsp.exec_raw(tostring(command)))
+    end
+  end
+  return exec_cmd("hyprctl dispatch " .. tostring(command))
+end
+
+local function trim(value)
+  return (value or ""):gsub("^%s+", ""):gsub("%s+$", "")
+end
+
+local function normalize_mods(mods)
+  mods = trim(mods)
+  if mods == "" then
+    return ""
+  end
+  local known = {
+    super = "SUPER",
+    super_l = "SUPER_L",
+    super_r = "SUPER_R",
+    shift = "SHIFT",
+    shift_l = "SHIFT_L",
+    shift_r = "SHIFT_R",
+    ctrl = "CTRL",
+    control = "CTRL",
+    ctrl_l = "CTRL_L",
+    ctrl_r = "CTRL_R",
+    control_l = "CTRL_L",
+    control_r = "CTRL_R",
+    alt = "ALT",
+    alt_l = "ALT_L",
+    alt_r = "ALT_R",
+    meta = "META",
+    meta_l = "META_L",
+    meta_r = "META_R",
+    mod2 = "MOD2",
+    mod3 = "MOD3",
+    mod5 = "MOD5",
+  }
+  local parts = {}
+  for token in mods:gmatch("%S+") do
+    parts[#parts + 1] = known[token:lower()] or token
+  end
+  return table.concat(parts, " ")
+end
+
+local function chord(mods, key)
+  mods = normalize_mods(mods):gsub("%s+", " + ")
+  key = trim(key)
+  if mods == "" then
+    return key
+  end
+  return mods .. " + " .. key
+end
+
+local function key_variants(key, mods)
+  key = trim(key):gsub("^xf86", "XF86")
+  local key_aliases = {
+    XF86AudioPlayPause = "XF86AudioPlay",
+    XF86audiolowervolume = "XF86AudioLowerVolume",
+    XF86audiomute = "XF86AudioMute",
+    XF86audioraisevolume = "XF86AudioRaiseVolume",
+    XF86audiostop = "XF86AudioStop",
+  }
+  key = key_aliases[key] or key
+  local shifted_number_keys = {
+    ["code:10"] = "exclam",
+    ["code:11"] = "at",
+    ["code:12"] = "numbersign",
+    ["code:13"] = "dollar",
+    ["code:14"] = "percent",
+    ["code:15"] = "asciicircum",
+    ["code:16"] = "ampersand",
+    ["code:17"] = "asterisk",
+    ["code:18"] = "parenleft",
+    ["code:19"] = "parenright",
+  }
+  local number_keys = {
+    ["code:10"] = "1",
+    ["code:11"] = "2",
+    ["code:12"] = "3",
+    ["code:13"] = "4",
+    ["code:14"] = "5",
+    ["code:15"] = "6",
+    ["code:16"] = "7",
+    ["code:17"] = "8",
+    ["code:18"] = "9",
+    ["code:19"] = "0",
+  }
+  if mods:upper():match("SHIFT") and shifted_number_keys[key] then
+    local number_key = number_keys[key]
+    if number_key then
+      return { shifted_number_keys[key], number_key }
+    end
+    return { shifted_number_keys[key] }
+  end
+  if number_keys[key] then
+    return { number_keys[key] }
+  end
+  return { key }
+end
+
+local function workspace_value(value)
+  value = trim(value)
+  return tonumber(value) or value
+end
+
+local function direction(value)
+  local directions = {
+    l = "left",
+    r = "right",
+    u = "up",
+    d = "down",
+    left = "left",
+    right = "right",
+    up = "up",
+    down = "down",
+  }
+  return directions[trim(value)] or trim(value)
+end
+
+local function dispatch(name, args)
+  local window_api = (dsp and dsp.window) or hl.window or {}
+  name = trim(name)
+  args = trim(args)
+  if name == "exec" then
+    return exec_cmd(args)
+  end
+  if name == "killactive" and window_api.close then
+    return function()
+      hl.dispatch(window_api.close())
+    end
+  end
+  if name == "fullscreen" and window_api.fullscreen then
+    if args == "1" then
+      return function()
+        hl.dispatch(window_api.fullscreen({ mode = "maximized" }))
+      end
+    end
+    return function()
+      hl.dispatch(window_api.fullscreen({ mode = "fullscreen" }))
+    end
+  end
+  if name == "movefocus" and dsp and dsp.focus then
+    return function()
+      local ok, dispatcher = pcall(dsp.focus, { direction = direction(args) })
+      if ok and dispatcher then
+        hl.dispatch(dispatcher)
+      end
+    end
+  end
+  if name == "cyclenext" then
+    if args == "prev" or args == "b" then
+      return exec_cmd("$HOME/.config/hypr/scripts/LuaCycleWindow.sh previous")
+    end
+    return exec_cmd("$HOME/.config/hypr/scripts/LuaCycleWindow.sh next")
+  end
+  if name == "swapwindow" then
+    local swap_direction = trim(args)
+    if swap_direction == "" then
+      return nil
+    end
+    return exec_cmd("$HOME/.config/hypr/scripts/LuaSwapWindow.sh " .. swap_direction)
+  end
+  if name == "workspace" and dsp and dsp.focus then
+    return function()
+      hl.dispatch(dsp.focus({ workspace = workspace_value(args) }))
+    end
+  end
+  if name == "movetoworkspace" then
+    if args == "special" or args:match("^special:") then
+      return function()
+        local win = hl.get_active_window and hl.get_active_window()
+        local ws = win and win.workspace
+        if ws and (ws.special == true or (type(ws.name) == "string" and ws.name:match("^special"))) then
+          local mon = hl.get_active_monitor and hl.get_active_monitor()
+          local active_ws = hl.get_active_workspace and hl.get_active_workspace(mon and mon.id)
+          local target_id = (active_ws and not active_ws.special and active_ws.id) or "+0"
+          if window_api.move then
+            hl.dispatch(window_api.move({ workspace = target_id }))
+          else
+            hl.dispatch(dsp.exec_raw("movetoworkspace " .. tostring(target_id)))
+          end
+          return
+        end
+        if window_api.move then
+          hl.dispatch(window_api.move({ workspace = workspace_value(args) }))
+        else
+          hl.dispatch(dsp.exec_raw("movetoworkspace " .. args))
+        end
+      end
+    end
+    if window_api.move then
+      return function()
+        hl.dispatch(window_api.move({ workspace = workspace_value(args) }))
+      end
+    end
+    return raw_dispatch_cmd("movetoworkspace " .. args)
+  end
+  if name == "movetoworkspacesilent" and window_api.move then
+    return function()
+      hl.dispatch(window_api.move({ workspace = workspace_value(args), follow = false }))
+    end
+  end
+  if name == "togglespecialworkspace" then
+    local workspace_api = (dsp and dsp.workspace) or {}
+    if workspace_api.toggle_special then
+      return function()
+        local ok, dispatcher = pcall(workspace_api.toggle_special, args ~= "" and { name = args } or nil)
+        if ok and dispatcher then
+          hl.dispatch(dispatcher)
+        end
+      end
+    end
+    if args ~= "" then
+      return raw_dispatch_cmd("togglespecialworkspace " .. args)
+    end
+    return raw_dispatch_cmd("togglespecialworkspace")
+  end
+  if name == "togglefloating" and window_api.float then
+    return function()
+      hl.dispatch(window_api.float({ action = "toggle" }))
+    end
+  end
+  if name == "togglegroup" then
+    return function()
+      local group_api = (dsp and dsp.group) or (hl and hl.dsp and hl.dsp.group) or {}
+      if group_api and group_api.toggle then
+        local ok, dispatcher = pcall(group_api.toggle)
+        if ok and dispatcher then
+          hl.dispatch(dispatcher)
+          return
+        end
+      end
+      if dsp and dsp.exec_raw then
+        pcall(hl.dispatch, dsp.exec_raw("togglegroup"))
+      end
+    end
+  end
+  if name == "changegroupactive" then
+    local group_api = (dsp and dsp.group) or (hl and hl.dsp and hl.dsp.group) or {}
+    if group_api and group_api.next and group_api.prev then
+      if args == "b" or args == "prev" or args == "-1" then
+        return function()
+          hl.dispatch(group_api.prev())
+        end
+      end
+      return function()
+        hl.dispatch(group_api.next())
+      end
+    end
+  end
+  if name == "pseudo" and window_api.pseudo then
+    return function()
+      hl.dispatch(window_api.pseudo())
+    end
+  end
+  if (name == "layoutmsg" or name == "layout") and dsp and dsp.layout then
+    return function()
+      local ok, dispatcher = pcall(dsp.layout, args)
+      if ok and dispatcher then
+        hl.dispatch(dispatcher)
+      end
+    end
+  end
+  if name == "togglesplit" and dsp and dsp.layout then
+    return function()
+      local ok, dispatcher = pcall(dsp.layout, "togglesplit")
+      if ok and dispatcher then
+        hl.dispatch(dispatcher)
+      end
+    end
+  end
+  if name == "resizewindow" and window_api.resize then
+    return function()
+      hl.dispatch(window_api.resize())
+    end
+  end
+  if name == "resizeactive" and window_api.resize then
+    local x, y = args:match("^(%-?%d+)%s+(%-?%d+)$")
+    if x and y then
+      return function()
+        hl.dispatch(window_api.resize({ x = tonumber(x) or 0, y = tonumber(y) or 0, relative = true }))
+      end
+    end
+  end
+  if name == "movewindow" then
+    if args == "" and window_api.drag then
+      return function()
+        hl.dispatch(window_api.drag())
+      end
+    end
+    if args ~= "" and window_api.move then
+      return function()
+        local ok, dispatcher = pcall(window_api.move, { direction = direction(args) })
+        if ok and dispatcher then
+          hl.dispatch(dispatcher)
+        end
+      end
+    end
+    if args ~= "" then
+      return raw_dispatch_cmd("movewindow " .. args)
+    end
+    return raw_dispatch_cmd("movewindow")
+  end
+  if args ~= "" then
+    return raw_dispatch_cmd(name .. " " .. args)
+  end
+  return raw_dispatch_cmd(name)
+end
+
+local function bind(mods, key, fn, opts)
+  local seen = {}
+  for _, key_variant in ipairs(key_variants(key, mods)) do
+    local key_chord = chord(mods, key_variant)
+    if not seen[key_chord] then
+      seen[key_chord] = true
+      if opts then
+        hl.bind(key_chord, fn, opts)
+      else
+        hl.bind(key_chord, fn)
+      end
+    end
+  end
+end
+
+local function unbind(mods, key)
+  if hl.unbind then
+    local seen = {}
+    for _, key_variant in ipairs(key_variants(key, mods)) do
+      local key_chord = chord(mods, key_variant)
+      if not seen[key_chord] then
+        seen[key_chord] = true
+        local ok = pcall(hl.unbind, mods, key_variant)
+        if not ok then
+          pcall(hl.unbind, key_chord)
         end
       end
     end
   end
-
-  if not keybind_helpers then
-    error("Failed to load keybind_helpers.lua from: " .. table.concat(tried_paths, ", "))
-  end
 end
-local window_api = keybind_helpers.window_api
-local exec_cmd = keybind_helpers.exec_cmd
-local raw_dispatch_cmd = keybind_helpers.raw_dispatch_cmd
-local dispatch = keybind_helpers.dispatch
-local bind = keybind_helpers.bind
-local bindm = keybind_helpers.bindm
 
--- Mass unbind defaults before rebuilding the Lua keymap.
-keybind_helpers.unbind_default_keys()
-
--- ==================================================
--- User-editable bindings
--- ==================================================
--- Section: Application launchers and utility scripts
-local app_binds = {
-  { "SUPER", "SPACE", "pkill rofi || true && rofi -show drun -modi drun,filebrowser,run,window", "app launcher" },
-  { "SUPER", "B", 'xdg-open "https://"', "open default browser" },
-  { "SUPER", "Q", "kitty", "Open terminal" },
-  { "SUPER", "E", "thunar", "file manager" },
-  { "SUPER", "T", "$HOME/.config/hypr/scripts/ThemeChanger.sh", "Global theme switcher using Wallust" },
-  { "SUPER", "H", "$HOME/.config/hypr/scripts/KeyHints.sh", "help / cheat sheet" },
-  { "SUPER ALT", "R", "$HOME/.config/hypr/scripts/Refresh.sh", "refresh bar and menus" },
-  { "SUPER SHIFT", "E", "$HOME/.config/hypr/scripts/RofiEmoji.sh", "emoji menu" },
-  { "SUPER", "S", "$HOME/.config/hypr/scripts/RofiSearch.sh", "web search" },
-  { "SUPER CTRL", "S", "rofi -show window", "window switcher" },
-  { "SUPER ALT", "O", "$HOME/.config/hypr/scripts/ChangeBlur.sh", "toggle blur" },
-  { "SUPER ALT", "G", "$HOME/.config/hypr/scripts/GameMode.sh", "toggle game mode" },
-  { "SUPER ALT", "L", "$HOME/.config/hypr/scripts/ChangeLayout.sh toggle", "toggle layouts" },
-  { "ALT", "V", "$HOME/.config/hypr/scripts/ClipManager.sh", "clipboard manager" },
-  { "SUPER ALT", "R", "$HOME/.config/hypr/scripts/RofiThemeSelector.sh", "rofi theme selector" },
-  {
-    "SUPER CTRL SHIFT",
-    "R",
-    "pkill rofi || true && $HOME/.config/hypr/scripts/RofiThemeSelector-modified.sh",
-    "rofi theme selector (modified)",
-  },
-  { "SUPER CTRL", "K", "$HOME/.config/hypr/scripts/Kitty_themes.sh", "Kitty theme selector" },
-  {
-    "SUPER SHIFT",
-    "B",
-    "$HOME/.config/hypr/UserScripts/RainbowBorders-low-cpu.sh  --run-once",
-    "Set static Rainbow Border",
-  },
-  {
-    "SUPER SHIFT",
-    "H",
-    "$HOME/.config/hypr/scripts/Toggle-Active-Window-Audio.sh",
-    "Toggle Mute/Unmute for Active-Window",
-  },
-  {
-    "ALT SHIFT",
-    "S",
-    "$HOME/.config/hypr/scripts/hyprshot.sh -m region -o $HOME/Pictures/Screenshots",
-    "Hyprshot Screen Capture",
-  },
-  { "SUPER ALT", "V", "$HOME/.config/hypr/scripts/Float-all-Windows.sh", "Float all windows" },
-  { "SUPER SHIFT", "Return", "$HOME/.config/hypr/scripts/Dropterminal.sh kitty", "DropDown terminal" },
-  {
-    "SUPER ALT",
-    "mouse_down",
-    "hyprctl keyword cursor:zoom_factor \"$(hyprctl getoption cursor:zoom_factor | awk 'NR==1 {factor = $2; if (factor < 1) {factor = 1}; print factor * 2.0}')\"",
-    "zoom in",
-  },
-  {
-    "SUPER ALT",
-    "mouse_up",
-    "hyprctl keyword cursor:zoom_factor \"$(hyprctl getoption cursor:zoom_factor | awk 'NR==1 {factor = $2; if (factor < 1) {factor = 1}; print factor / 2.0}')\"",
-    "zoom out",
-  },
-  { "SUPER CTRL ALT", "B", "pkill -SIGUSR1 waybar", "toggle waybar on/off" },
-  { "SUPER", "Y", "$HOME/.config/hypr/scripts/WaybarStyles.sh", "waybar styles menu" },
-  { "SUPER", "T", "$HOME/.config/hypr/scripts/WaybarLayout.sh", "waybar layout menu" },
-  { "SUPER", "N", "$HOME/.config/hypr/scripts/Hyprsunset.sh toggle", "Toggle Hyprsunset - night light" },
-  { "SUPER ALT", "M", "$HOME/.config/hypr/UserScripts/RofiBeats.sh", "online music" },
-  { "SUPER", "U", "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh", "select wallpaper" },
-  { "SUPER", "I", "$HOME/.config/hypr/UserScripts/WallpaperEffects.sh", "wallpaper effects" },
-  { "CTRL ALT", "W", "$HOME/.config/hypr/UserScripts/WallpaperRandom.sh", "random wallpaper" },
-  { "SUPER SHIFT", "K", "$HOME/.config/hypr/scripts/KeyBinds.sh", "search keybinds" },
-  { "SUPER ALT", "H", "$HOME/.config/hypr/scripts/Animations.sh", "animations menu" },
-  { "SUPER SHIFT", "O", "$HOME/.config/hypr/UserScripts/ZshChangeTheme.sh", "change oh-my-zsh theme" },
-  { "SUPER ALT", "C", "$HOME/.config/hypr/UserScripts/RofiCalc.sh", "calculator" },
-}
-for _, app in ipairs(app_binds) do
-  bind(app[1], app[2], exec_cmd(app[3]), { description = app[4] })
-end
---
---
--- These are examples of how to bind to a TUI/CLI apps
--- The specific keybinds are just examples
--- Do not user as-is as it will break exisitng keybinds
---
---
--- TUI Apps Configuration (commented options from LUA-files/hyprland-key-bindings-example.lua).
--- local terminal = "uwsm-app -- " .. (os.getenv("TERMINAL") or "")
--- local browser = "omarchy-launch-browser"
--- local tui_apps = {
---   { "CTRL + ALT + O", "opencode", "a opencode", "OpenCode" },
---   { "CTRL + ALT + SHIFT + A", "cline", "-e cline", "OpenCode" },
---   { "CTRL + ALT + B", "btop", "-e btop", "Task Manager" },
---   { "CTRL + ALT + SHIFT + B", "bluetui", "-e bluetui", "BlueTUI" },
---   { "CTRL + ALT + E", "spf", "-e spf", "SuperFile Manager" },
---   { "CTRL + ALT + L", "lazygit", "-e lazygit", "LazyGit" },
---   { "CTRL + ALT + N", "nvtop", "-e nvtop", "Nvtop" },
---   { "CTRL + ALT + SHIFT + N", "ncdu", "-e ncdu", "Ncdu" },
---   { "CTRL + ALT + W", "impala", "-e impala", "Impala Wi-Fi" },
---   { "CTRL + ALT + P", "pacseek", "-e pacseek", "PacSeek" },
---   { "CTRL + ALT + SHIFT + P", "pacsea", "-e pacsea", "PacSea" },
---   { "CTRL + ALT + R", "fzf-uninstall", "-e ~/.config/hypr/fzfpurge", "Fzf Uninstaller" },
---   { "CTRL + ALT + V", "wiremix", "-e wiremix", "WireMix Volume" },
---   { "CTRL + ALT + SHIFT + H", "htop", "-e htop", "Htop" },
--- }
--- for _, app in ipairs(tui_apps) do
---   hl.bind(app[1], hl.dsp.exec_cmd(terminal .. " --title=" .. app[2] .. " " .. app[3]), { description = app[4] })
--- end
-
---
---
--- These are examples of how to bind webpages
--- The specific keybinds are just examples
--- Do not user as-is as it will break exisitng keybinds
---
---
--- Web Apps Configuration (commented options from LUA-files/hyprland-key-bindings-example.lua).
--- local web_apps = {
---   { "SUPER + A", "https://gemini.google.com", "Gemini AI" },
---   { "SUPER + Y", "https://youtube.com", "YouTube" },
---   { "SUPER + T", "https://tiktok.com", "TikTok" },
---   { "SUPER + X", "https://x.com", "X.com" },
---   { "SUPER + U", "http://10.24.1.1", "Unifi" },
---   { "SUPER + I", "https://instagram.com", "Instagram" },
---   { "SUPER + P", "https://mail.proton.me", "Proton Mail" },
--- }
--- for _, web in ipairs(web_apps) do
---   hl.bind(web[1], hl.dsp.exec_cmd([[omarchy-launch-webapp "]] .. web[2] .. [["]]), { description = web[3] })
--- end
-
--- Manual example actions not currently active in this config.
--- hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "Fullscreen Window" })
--- hl.bind("ALT + SPACE", hl.dsp.window.float({ action = "toggle" }), { description = "Toggle floating" })
--- hl.bind("CTRL + ALT + return", hl.dsp.exec_cmd("uwsm-app -- kitty"), { description = "Kitty terminal" })
--- hl.bind(
---   "CTRL + ALT + SHIFT + return",
---   hl.dsp.exec_cmd([[uwsm-app -- xdg-terminal-exec --dir="$(omarchy-cmd-terminal-cwd)" tmux new]]),
---   { description = "Tmux" }
--- )
-
--- Section: Window/session controls
-bind("SUPER ALT", "F", dispatch("fullscreen", ""), { description = "fullscreen" })
-bind("SUPER CTRL", "F", dispatch("fullscreen", "1"), { description = "maximize window" })
-bind("SUPER", "V", dispatch("togglefloating", ""), { description = "Float current window" })
-bind("SUPER CTRL", "O", dispatch("setprop", "active opaque toggle"), { description = "toggle active window opacity" })
+-- Converted from configs/Keybinds.conf
 bind(
-  "ALT",
+  "SUPER",
+  "D",
+  exec_cmd("pkill rofi || true; $HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show drun -modi drun,filebrowser,run,window -config $HOME/.config/hypr/rofi/config.rasi"),
+  { description = "app launcher" }
+)
+bind("SUPER", "B", exec_cmd('xdg-open "https://"'), { description = "open default browser" })
+bind("SUPER", "A", exec_cmd("$HOME/.config/hypr/scripts/OverviewToggle.sh"), { description = "desktop overview" })
+bind(
+  "SUPER CTRL",
+  "A",
+  exec_cmd("pkill rofi || true && ags -t 'overview'"),
+  { description = "Ags overview" }
+)
+bind(
+  "SUPER",
+  "Return",
+  exec_cmd("$HOME/.config/hypr/scripts/LaunchTerminal.sh '$term'"),
+  { description = "Open terminal" }
+)
+bind(
+  "SUPER",
+  "E",
+  exec_cmd("$HOME/.config/hypr/scripts/LaunchFileManager.sh '$files' '$term'"),
+  { description = "file manager" }
+)
+bind("SUPER", "C", exec_cmd("$HOME/.config/hypr/scripts/rofi-ssh-menu.sh"), { description = "SSH session manager" })
+bind(
+  "SUPER",
+  "T",
+  exec_cmd("$HOME/.config/hypr/scripts/ThemeChanger.sh"),
+  { description = "Global theme switcher using Wallust" }
+)
+bind("SUPER", "H", exec_cmd("$HOME/.config/hypr/scripts/KeyHints.sh"), { description = "help / cheat sheet" })
+bind("SUPER ALT", "R", exec_cmd("$HOME/.config/hypr/scripts/Refresh.sh"), { description = "refresh bar and menus" })
+bind("SUPER ALT", "E", exec_cmd("$HOME/.config/hypr/scripts/RofiEmoji.sh"), { description = "emoji menu" })
+bind("SUPER", "S", exec_cmd("$HOME/.config/hypr/scripts/RofiSearch.sh"), { description = "web search" })
+bind(
+  "SUPER CTRL",
+  "S",
+  exec_cmd("$HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show window -config $HOME/.config/hypr/rofi/config.rasi"),
+  { description = "window switcher" }
+)
+bind("SUPER ALT", "O", exec_cmd("$HOME/.config/hypr/scripts/ChangeBlur.sh"), { description = "toggle blur" })
+bind("SUPER SHIFT", "G", exec_cmd("$HOME/.config/hypr/scripts/GameMode.sh"), { description = "toggle game mode" })
+bind(
+  "SUPER ALT",
+  "L",
+  exec_cmd("$HOME/.config/hypr/scripts/ChangeLayout.sh toggle"),
+  { description = "toggle layouts" }
+)
+bind("SUPER ALT", "V", exec_cmd("$HOME/.config/hypr/scripts/ClipManager.sh"), { description = "clipboard manager" })
+bind(
+  "SUPER CTRL",
+  "R",
+  exec_cmd("$HOME/.config/hypr/scripts/RofiThemeSelector.sh"),
+  { description = "rofi theme selector" }
+)
+bind(
+  "SUPER CTRL SHIFT",
+  "R",
+  exec_cmd("pkill rofi || true && $HOME/.config/hypr/scripts/RofiThemeSelector-modified.sh"),
+  { description = "rofi theme selector (modified)" }
+)
+bind(
+  "SUPER CTRL",
+  "K",
+  exec_cmd("$HOME/.config/hypr/scripts/Kitty_themes.sh"),
+  { description = "Kitty theme selector" }
+)
+bind(
+  "SUPER CTRL",
+  "G",
+  exec_cmd("$HOME/.config/hypr/scripts/Ghostty_themes.sh"),
+  { description = "Ghostty theme selector" }
+)
+bind(
+  "SUPER SHIFT",
+  "B",
+  exec_cmd("$HOME/.config/hypr/UserScripts/RainbowBorders-low-cpu.sh  --run-once"),
+  { description = "Set static Rainbow Border" }
+)
+bind(
+  "SUPER SHIFT",
+  "H",
+  exec_cmd("$HOME/.config/hypr/scripts/Toggle-Active-Window-Audio.sh"),
+  { description = "Toggle Mute/Unmute for Active-Window" }
+)
+bind(
+  "ALT SHIFT",
+  "S",
+  exec_cmd("$HOME/.config/hypr/scripts/hyprshot.sh -m region -o $HOME/Pictures/Screenshots"),
+  { description = "Hyprshot Screen Capture" }
+)
+bind("SUPER SHIFT", "F", dispatch("fullscreen", ""), { description = "fullscreen" })
+bind("SUPER", "F", dispatch("fullscreen", "1"), { description = "maximize window" })
+bind("SUPER", "SPACE", dispatch("togglefloating", ""), { description = "Float current window" })
+bind(
+  "SUPER ALT",
+  "SPACE",
+  exec_cmd("$HOME/.config/hypr/scripts/Float-all-Windows.sh"),
+  { description = "Float all windows" }
+)
+bind(
+  "SUPER CTRL",
+  "SPACE",
+  exec_cmd("$HOME/.config/hypr/scripts/float.all.samesize.lua"),
+  { description = "Float all windows same size" }
+)
+bind(
+  "SUPER SHIFT",
+  "Return",
+  exec_cmd("$HOME/.config/hypr/scripts/Dropterminal.sh kitty"),
+  { description = "DropDown terminal" }
+)
+bind(
+  "SUPER ALT",
+  "mouse_down",
+  exec_cmd("$HOME/.config/hypr/scripts/Zoom.sh in"),
+  { description = "zoom in" }
+)
+bind(
+  "SUPER ALT",
+  "mouse_up",
+  exec_cmd("$HOME/.config/hypr/scripts/Zoom.sh out"),
+  { description = "zoom out" }
+)
+bind("SUPER CTRL ALT", "B", exec_cmd("pkill -SIGUSR1 waybar"), { description = "toggle waybar on/off" })
+bind("SUPER CTRL", "B", exec_cmd("$HOME/.config/hypr/scripts/WaybarStyles.sh"), { description = "waybar styles menu" })
+bind("SUPER ALT", "B", exec_cmd("$HOME/.config/hypr/scripts/WaybarLayout.sh"), { description = "waybar layout menu" })
+bind(
+  "SUPER",
+  "N",
+  exec_cmd("$HOME/.config/hypr/scripts/Hyprsunset.sh toggle"),
+  { description = "Toggle Hyprsunset - night light" }
+)
+bind("SUPER SHIFT", "M", exec_cmd("$HOME/.config/hypr/UserScripts/RofiBeats.sh"), { description = "online music" })
+bind("SUPER", "W", exec_cmd("$HOME/.config/hypr/scripts/WallpaperSelect.sh"), { description = "select wallpaper" })
+bind(
+  "SUPER SHIFT",
+  "W",
+  exec_cmd("$HOME/.config/hypr/scripts/WallpaperEffects.sh"),
+  { description = "wallpaper effects" }
+)
+bind(
+  "CTRL ALT",
+  "W",
+  exec_cmd("$HOME/.config/hypr/UserScripts/WallpaperRandom.sh"),
+  { description = "random wallpaper" }
+)
+bind("SUPER CTRL", "O", exec_cmd("$HOME/.config/hypr/scripts/ToggleOpacity.sh"), { description = "toggle active window opacity" })
+bind("SUPER SHIFT", "K", exec_cmd("$HOME/.config/hypr/scripts/KeyBinds.sh"), { description = "search keybinds" })
+bind("SUPER SHIFT", "A", exec_cmd("$HOME/.config/hypr/scripts/Animations.sh"), { description = "animations menu" })
+bind(
+  "SUPER SHIFT",
+  "O",
+  exec_cmd("$HOME/.config/hypr/scripts/ZshChangeTheme.sh"),
+  { description = "change oh-my-zsh theme" }
+)
+bind(
+  "ALT_L",
   "SHIFT_L",
-  dispatch("switch keyboard layout globally", "exec, $HOME/.config/hypr/scripts/KeyboardLayout.sh switch"),
-  { locked = true, description = "switch keyboard layout globally" }
+  exec_cmd("$HOME/.config/hypr/scripts/KeyboardLayout.sh switch"),
+  { description = "switch keyboard layout globally", locked = true }
 )
 bind(
   "SHIFT_L",
   "ALT_L",
-  dispatch("switch keyboard layout per-window", "exec, $HOME/.config/hypr/scripts/Tak0-Per-Window-Switch.sh"),
-  { locked = true, description = "switch keyboard layout per-window" }
+  exec_cmd("$HOME/.config/hypr/scripts/Tak0-Per-Window-Switch.sh"),
+  { description = "switch keyboard layout per-window", locked = true }
 )
+bind("SUPER ALT", "C", exec_cmd("$HOME/.config/hypr/UserScripts/RofiCalc.sh"), { description = "calculator" })
 bind(
   "SUPER CTRL",
   "F9",
@@ -224,8 +575,8 @@ bind(
   dispatch("movecurrentworkspacetomonitor", "d"),
   { description = "move workspace to down monitor" }
 )
-bind("SUPER SHIFT", "M", exec_cmd("$HOME/.config/hypr/scripts/Logout.sh"), { description = "exit Hyprland" })
-bind("SUPER", "F4", dispatch("killactive", ""), { description = "close active window" })
+bind("CTRL ALT", "Delete", exec_cmd("$HOME/.config/hypr/scripts/Logout.sh"), { description = "exit Hyprland" })
+bind("SUPER", "Q", dispatch("killactive", ""), { description = "close active window" })
 bind(
   "SUPER SHIFT",
   "Q",
@@ -233,29 +584,33 @@ bind(
   { description = "Terminate active process" }
 )
 bind("CTRL ALT", "L", exec_cmd("$HOME/.config/hypr/scripts/LockScreen.sh"), { description = "lock screen" })
-bind("SUPER", "M", exec_cmd("$HOME/.config/hypr/scripts/Wlogout.sh"), { description = "powermenu" })
+bind("CTRL ALT", "P", exec_cmd("$HOME/.config/hypr/scripts/Wlogout.sh"), { description = "powermenu" })
+bind("CTRL ALT", "D", exec_cmd("$HOME/.config/hypr/scripts/Dock.sh"), { description = "toggle dock" })
 bind("SUPER SHIFT", "N", exec_cmd("swaync-client -t -sw"), { description = "notification panel" })
 bind(
-  "SUPER ALT",
+  "SUPER SHIFT",
   "E",
-  exec_cmd("$HOME/.config/hypr/UserScripts/QuickEdit.sh"),
+  exec_cmd("$HOME/.config/hypr/scripts/Kool_Quick_Settings.sh"),
   { description = "Quick settings menu" }
 )
-
--- Section: Layout and tiling controls
 bind("SUPER CTRL", "D", dispatch("layoutmsg", "removemaster"), { description = "remove master" })
 bind("SUPER", "I", dispatch("layoutmsg", "addmaster"), { description = "add master" })
-bind("SUPER", "j", exec_cmd("$HOME/.config/hypr/scripts/LuaCycleWindow.sh next"), { description = "cycle next" })
+bind(
+  "SUPER",
+  "j",
+  exec_cmd("$HOME/.config/hypr/scripts/LayoutKeybindDispatch.sh cycle-next"),
+  { description = "cycle next (layout-aware)" }
+)
 bind(
   "SUPER",
   "k",
-  exec_cmd("$HOME/.config/hypr/scripts/LuaCycleWindow.sh previous"),
-  { description = "cycle previous" }
+  exec_cmd("$HOME/.config/hypr/scripts/LayoutKeybindDispatch.sh cycle-prev"),
+  { description = "cycle previous (layout-aware)" }
 )
 bind("SUPER CTRL", "Return", dispatch("layoutmsg", "swapwithmaster"), { description = "swap with master" })
 bind("SUPER SHIFT", "I", dispatch("layoutmsg", "togglesplit"), { description = "toggle split (dwindle)" })
 bind("SUPER", "P", dispatch("pseudo", ""), { description = "toggle pseudo (dwindle)" })
-bind("SUPER", "M", raw_dispatch_cmd("splitratio 0.3"), { description = "set split ratio 0.3" })
+bind("SUPER", "M", exec_cmd("hyprctl dispatch splitratio 0.3"), { description = "set split ratio 0.3" })
 bind(
   "SUPER ALT",
   "1",
@@ -280,12 +635,18 @@ bind("SUPER SHIFT", "comma", dispatch("layoutmsg", "move -col"), { description =
 bind("SUPER ALT", "comma", dispatch("layoutmsg", "swapcol l"), { description = "swap columns left" })
 bind("SUPER ALT", "period", dispatch("layoutmsg", "swapcol r"), { description = "swap columns right" })
 bind(
+  "SUPER",
+  "R",
+  exec_cmd("bash $HOME/.config/hypr/scripts/ScrollCycleColumnWidth.sh"),
+  { description = "Cycle column width preset (scrolling)" }
+)
+bind(
   "SUPER ALT",
   "H",
   exec_cmd("hyprctl keyword scrolling:direction right"),
   { description = "Horizonal scroll right" }
 )
-bind("SUPER ALT", "V", exec_cmd("hyprctl keyword scrolling:direction down"), { description = "Vertical Scroll down" })
+bind("SUPER CTRL", "V", exec_cmd("hyprctl keyword scrolling:direction down"), { description = "Vertical Scroll down" })
 bind(
   "SUPER ALT",
   "S",
@@ -294,90 +655,168 @@ bind(
   ),
   { description = "toggle scrolling V/H" }
 )
-bind("ALT", "Tab", exec_cmd("$HOME/.config/hypr/scripts/LuaCycleWindow.sh next"), { description = "cycle next window" })
-
--- Section: Audio, media, and hardware keys
+-- Hyprview: SUPER CTRL+Tab (bound later after workspace/group Tab binds)
+-- "smartgrid", "justified", "masonry", "bands", "hero", "spiral"
+-- "satellite", "staggered", "columnar", "vortex", "random"
+bind("ALT", "Tab", dispatch("cyclenext", ""), { description = "cycle next window" })
+bind("ALT", "Tab", dispatch("bringactivetotop", ""), { description = "bring active to top" })
 bind(
   "",
   "xf86audioraisevolume",
-  dispatch("volume up", "exec, $HOME/.config/hypr/scripts/Volume.sh --inc"),
-  { description = "volume up" }
+  exec_cmd("$HOME/.config/hypr/scripts/Volume.sh --inc"),
+  { description = "volume up", locked = true, ["repeat"] = true }
 )
 bind(
   "",
   "xf86audiolowervolume",
-  dispatch("volume down", "exec, $HOME/.config/hypr/scripts/Volume.sh --dec"),
-  { description = "volume down" }
+  exec_cmd("$HOME/.config/hypr/scripts/Volume.sh --dec"),
+  { description = "volume down", locked = true, ["repeat"] = true }
 )
 bind(
   "ALT",
   "xf86audioraisevolume",
-  dispatch("volume up precise", "exec, $HOME/.config/hypr/scripts/Volume.sh --inc-precise"),
-  { description = "volume up precise" }
+  exec_cmd("$HOME/.config/hypr/scripts/Volume.sh --inc-precise"),
+  { description = "volume up precise", locked = true, ["repeat"] = true }
 )
 bind(
   "ALT",
   "xf86audiolowervolume",
-  dispatch("volume down precise", "exec, $HOME/.config/hypr/scripts/Volume.sh --dec-precise"),
-  { description = "volume down precise" }
+  exec_cmd("$HOME/.config/hypr/scripts/Volume.sh --dec-precise"),
+  { description = "volume down precise", locked = true, ["repeat"] = true }
 )
 bind(
   "",
   "xf86AudioMicMute",
-  dispatch("toggle mic mute", "exec, $HOME/.config/hypr/scripts/Volume.sh --toggle-mic"),
-  { locked = true, description = "toggle mic mute" }
+  exec_cmd("$HOME/.config/hypr/scripts/Volume.sh --toggle-mic"),
+  { description = "toggle mic mute", locked = true }
 )
 bind(
   "",
   "xf86audiomute",
-  dispatch("toggle mute", "exec, $HOME/.config/hypr/scripts/Volume.sh --toggle"),
-  { locked = true, description = "toggle mute" }
+  exec_cmd("$HOME/.config/hypr/scripts/Volume.sh --toggle"),
+  { description = "toggle mute", locked = true }
 )
-bind("", "xf86Sleep", dispatch("sleep", "exec, systemctl suspend"), { locked = true, description = "sleep" })
+bind("", "xf86Sleep", exec_cmd("systemctl suspend"), { description = "sleep", locked = true })
 bind(
   "",
   "xf86Rfkill",
-  dispatch("airplane mode", "exec, $HOME/.config/hypr/scripts/AirplaneMode.sh"),
-  { locked = true, description = "airplane mode" }
+  exec_cmd("$HOME/.config/hypr/scripts/AirplaneMode.sh"),
+  { description = "airplane mode", locked = true }
 )
 bind(
   "",
   "xf86AudioPlayPause",
-  dispatch("play/pause", "exec, $HOME/.config/hypr/scripts/MediaCtrl.sh --pause"),
-  { locked = true, description = "play/pause" }
+  exec_cmd("$HOME/.config/hypr/scripts/MediaCtrl.sh --pause"),
+  { description = "play/pause", locked = true }
 )
 bind(
   "",
   "xf86AudioPause",
-  dispatch("pause", "exec, $HOME/.config/hypr/scripts/MediaCtrl.sh --pause"),
-  { locked = true, description = "pause" }
+  exec_cmd("$HOME/.config/hypr/scripts/MediaCtrl.sh --pause"),
+  { description = "pause", locked = true }
 )
 bind(
   "",
   "xf86AudioPlay",
-  dispatch("play", "exec, $HOME/.config/hypr/scripts/MediaCtrl.sh --pause"),
-  { locked = true, description = "play" }
+  exec_cmd("$HOME/.config/hypr/scripts/MediaCtrl.sh --pause"),
+  { description = "play", locked = true }
 )
 bind(
   "",
   "xf86AudioNext",
-  dispatch("next track", "exec, $HOME/.config/hypr/scripts/MediaCtrl.sh --nxt"),
-  { locked = true, description = "next track" }
+  exec_cmd("$HOME/.config/hypr/scripts/MediaCtrl.sh --nxt"),
+  { description = "next track", locked = true }
 )
 bind(
   "",
   "xf86AudioPrev",
-  dispatch("previous track", "exec, $HOME/.config/hypr/scripts/MediaCtrl.sh --prv"),
-  { locked = true, description = "previous track" }
+  exec_cmd("$HOME/.config/hypr/scripts/MediaCtrl.sh --prv"),
+  { description = "previous track", locked = true }
 )
 bind(
   "",
   "xf86audiostop",
-  dispatch("stop", "exec, $HOME/.config/hypr/scripts/MediaCtrl.sh --stop"),
-  { locked = true, description = "stop" }
+  exec_cmd("$HOME/.config/hypr/scripts/MediaCtrl.sh --stop"),
+  { description = "stop", locked = true }
 )
-
--- Section: Screenshot bindings
+bind(
+  "",
+  "xf86MonBrightnessDown",
+  exec_cmd("$HOME/.config/hypr/scripts/Brightness.sh --dec"),
+  { description = "decrease monitor brightness", locked = true, ["repeat"] = true }
+)
+bind(
+  "",
+  "xf86MonBrightnessUp",
+  exec_cmd("$HOME/.config/hypr/scripts/Brightness.sh --inc"),
+  { description = "increase monitor brightness", locked = true, ["repeat"] = true }
+)
+bind(
+  "CTRL ALT",
+  "equal",
+  exec_cmd("$HOME/.config/hypr/scripts/Brightness.sh --inc"),
+  { description = "increase brightness", locked = true, ["repeat"] = true }
+)
+bind(
+  "CTRL ALT",
+  "minus",
+  exec_cmd("$HOME/.config/hypr/scripts/Brightness.sh --dec"),
+  { description = "decrease brightness", locked = true, ["repeat"] = true }
+)
+bind(
+  "CTRL ALT",
+  "KP_Add",
+  exec_cmd("$HOME/.config/hypr/scripts/Brightness.sh --inc"),
+  { description = "increase brightness (numpad)", locked = true, ["repeat"] = true }
+)
+bind(
+  "CTRL ALT",
+  "KP_Subtract",
+  exec_cmd("$HOME/.config/hypr/scripts/Brightness.sh --dec"),
+  { description = "decrease brightness (numpad)", locked = true, ["repeat"] = true }
+)
+bind(
+  "",
+  "xf86KbdBrightnessDown",
+  exec_cmd("$HOME/.config/hypr/scripts/BrightnessKbd.sh --dec"),
+  { description = "decrease keyboard brightness", locked = true, ["repeat"] = true }
+)
+bind(
+  "",
+  "xf86KbdBrightnessUp",
+  exec_cmd("$HOME/.config/hypr/scripts/BrightnessKbd.sh --inc"),
+  { description = "increase keyboard brightness", locked = true, ["repeat"] = true }
+)
+bind(
+  "",
+  "xf86KbdLightOnOff",
+  exec_cmd("$HOME/.config/hypr/scripts/BrightnessKbd.sh --cycle"),
+  { description = "cycle keyboard brightness", locked = true }
+)
+bind(
+  "",
+  "xf86TouchpadToggle",
+  exec_cmd("$HOME/.config/hypr/scripts/TouchPad.sh"),
+  { description = "disable touchpad" }
+)
+bind(
+  "",
+  "xf86Launch1",
+  exec_cmd("rog-control-center"),
+  { description = "ASUS Armory crate button" }
+)
+bind(
+  "",
+  "xf86Launch3",
+  exec_cmd("asusctl led-mode -n"),
+  { description = "FN+F4 Switch keyboard RGB profile" }
+)
+bind(
+  "",
+  "xf86Launch4",
+  exec_cmd("asusctl profile -n"),
+  { description = "FN+F5 change of fan profiles" }
+)
 bind("SUPER", "Print", exec_cmd("$HOME/.config/hypr/scripts/ScreenShot.sh --now"), { description = "screenshot now" })
 bind(
   "SUPER SHIFT",
@@ -409,119 +848,89 @@ bind(
   exec_cmd("$HOME/.config/hypr/scripts/ScreenShot.sh --swappy"),
   { description = "screenshot (swappy)" }
 )
--- Keep legacy script-based resize bindings commented for quick rollback during Lua API migration.
--- These call ResizeActive.sh and are preserved in case native hl.dsp/hl.window resize behavior regresses.
--- bind(
---   "SUPER SHIFT",
---   "left",
---   exec_cmd("bash $HOME/.config/hypr/scripts/ResizeActive.sh -50 0"),
---   { description = "resize left (-50)" }
--- )
--- bind(
---   "SUPER SHIFT",
---   "right",
---   exec_cmd("bash $HOME/.config/hypr/scripts/ResizeActive.sh 50 0"),
---   { description = "resize right (+50)" }
--- )
--- bind(
---   "SUPER SHIFT",
---   "up",
---   exec_cmd("bash $HOME/.config/hypr/scripts/ResizeActive.sh 0 -50"),
---   { description = "resize up (-50)" }
--- )
--- bind(
---   "SUPER SHIFT",
---   "down",
---   exec_cmd("bash $HOME/.config/hypr/scripts/ResizeActive.sh 0 50"),
---   { description = "resize down (+50)" }
--- )
-
--- Section: Window resize, move, swap, and grouping
+-- Screenshot keybindings using F6 (no PrintSrc button)
+bind("SUPER", "F6", exec_cmd("$HOME/.config/hypr/scripts/ScreenShot.sh --now"), { description = "screenshot" })
 bind(
   "SUPER SHIFT",
-  "left",
-  dispatch("resizeactive", "-50 0"),
-  { description = "resize left (-50)" }
+  "F6",
+  exec_cmd("$HOME/.config/hypr/scripts/ScreenShot.sh --area"),
+  { description = "screenshot (area)" }
 )
+bind(
+  "SUPER CTRL",
+  "F6",
+  exec_cmd("$HOME/.config/hypr/scripts/ScreenShot.sh --in5"),
+  { description = "screenshot (5 secs delay)" }
+)
+bind(
+  "SUPER ALT",
+  "F6",
+  exec_cmd("$HOME/.config/hypr/scripts/ScreenShot.sh --in10"),
+  { description = "screenshot (10 secs delay)" }
+)
+bind(
+  "ALT",
+  "F6",
+  exec_cmd("$HOME/.config/hypr/scripts/ScreenShot.sh --active"),
+  { description = "screenshot (active window only)" }
+)
+bind("SUPER SHIFT", "left", dispatch("resizeactive", "-50 0"), { description = "resize left (-50)", ["repeat"] = true })
 bind(
   "SUPER SHIFT",
   "right",
   dispatch("resizeactive", "50 0"),
-  { description = "resize right (+50)" }
+  { description = "resize right (+50)", ["repeat"] = true }
 )
-bind("SUPER SHIFT", "up", dispatch("resizeactive", "0 -50"), { description = "resize up (-50)" })
-bind(
-  "SUPER SHIFT",
-  "down",
-  dispatch("resizeactive", "0 50"),
-  { description = "resize down (+50)" }
-)
--- Keep legacy directional move script binds commented for rollback during Lua API migration.
--- Native movewindow dispatch below replaces LuaMoveWindowDirectional.sh usage.
--- bind(
---   "SUPER CTRL",
---   "left",
---   exec_cmd("$HOME/.config/hypr/scripts/LuaMoveWindowDirectional.sh left"),
---   { description = "move window left" }
--- )
--- bind(
---   "SUPER CTRL",
---   "right",
---   exec_cmd("$HOME/.config/hypr/scripts/LuaMoveWindowDirectional.sh right"),
---   { description = "move window right" }
--- )
+bind("SUPER SHIFT", "up", dispatch("resizeactive", "0 -50"), { description = "resize up (-50)", ["repeat"] = true })
+bind("SUPER SHIFT", "down", dispatch("resizeactive", "0 50"), { description = "resize down (+50)", ["repeat"] = true })
 bind("SUPER CTRL", "left", dispatch("movewindow", "l"), { description = "move window left" })
 bind("SUPER CTRL", "right", dispatch("movewindow", "r"), { description = "move window right" })
 bind("SUPER CTRL", "up", dispatch("movewindow", "u"), { description = "move window up" })
 bind("SUPER CTRL", "down", dispatch("movewindow", "d"), { description = "move window down" })
-bind(
-  "SUPER ALT",
-  "left",
-  exec_cmd("$HOME/.config/hypr/scripts/LuaSwapWindow.sh l"),
-  { description = "swap window left" }
-)
-bind(
-  "SUPER ALT",
-  "right",
-  exec_cmd("$HOME/.config/hypr/scripts/LuaSwapWindow.sh r"),
-  { description = "swap window right" }
-)
-bind("SUPER ALT", "up", exec_cmd("$HOME/.config/hypr/scripts/LuaSwapWindow.sh u"), { description = "swap window up" })
-bind(
-  "SUPER ALT",
-  "down",
-  exec_cmd("$HOME/.config/hypr/scripts/LuaSwapWindow.sh d"),
-  { description = "swap window down" }
-)
+bind("SUPER ALT", "left", dispatch("swapwindow", "l"), { description = "swap window left" })
+bind("SUPER ALT", "right", dispatch("swapwindow", "r"), { description = "swap window right" })
+bind("SUPER ALT", "up", dispatch("swapwindow", "u"), { description = "swap window up" })
+bind("SUPER ALT", "down", dispatch("swapwindow", "d"), { description = "swap window down" })
 bind("SUPER", "G", dispatch("togglegroup", ""), { description = "toggle group" })
 bind("SUPER", "Tab", dispatch("changegroupactive", "f"), { description = "Change Group Forward" })
-bind("SUPER CTRL", "tab", dispatch("changegroupactive", ""), { description = "change active in group" })
+-- SUPER CTRL+Tab is Hyprview Toggle (not change active in group)
 bind("SUPER SHIFT", "Tab", dispatch("changegroupactive", "b"), { description = "Change Group Back" })
-bind("SUPER CTRL", "K", dispatch("moveintogroup", "l"), { description = "Move left into group" })
+bind("SUPER CTRL", "J", dispatch("moveintogroup", "l"), { description = "Move left into group" })
 bind("SUPER CTRL", "L", dispatch("moveintogroup", "r"), { description = "Move Right into group" })
 bind("SUPER CTRL", "H", dispatch("moveoutofgroup", ""), { description = "Move active out of group" })
-bind("SUPER", "left", dispatch("movefocus", "l"), { description = "focus left" })
-bind("SUPER", "right", dispatch("movefocus", "r"), { description = "focus right" })
-bind("SUPER", "up", dispatch("movefocus", "u"), { description = "focus up" })
-bind("SUPER", "down", dispatch("movefocus", "d"), { description = "focus down" })
-
--- Section: Workspace navigation and assignment
--- Keep legacy relative workspace focus script binds commented for rollback during Lua API migration.
--- Native workspace dispatch below replaces LuaFocusWorkspaceRelative.sh usage.
--- bind(
---   "SUPER",
---   "tab",
---   exec_cmd("$HOME/.config/hypr/scripts/LuaFocusWorkspaceRelative.sh next"),
---   { description = "next workspace" }
--- )
--- bind(
---   "SUPER SHIFT",
---   "tab",
---   exec_cmd("$HOME/.config/hypr/scripts/LuaFocusWorkspaceRelative.sh previous"),
---   { description = "previous workspace" }
--- )
-bind("SUPER", "tab", dispatch("workspace", "e+1"), { description = "next workspace" })
-bind("SUPER SHIFT", "tab", dispatch("workspace", "e-1"), { description = "previous workspace" })
+bind(
+  "SUPER",
+  "left",
+  exec_cmd("$HOME/.config/hypr/scripts/LayoutKeybindDispatch.sh focus-left"),
+  { description = "focus left (layout-aware)" }
+)
+bind(
+  "SUPER",
+  "right",
+  exec_cmd("$HOME/.config/hypr/scripts/LayoutKeybindDispatch.sh focus-right"),
+  { description = "focus right (layout-aware)" }
+)
+bind(
+  "SUPER",
+  "up",
+  exec_cmd("$HOME/.config/hypr/scripts/LayoutKeybindDispatch.sh focus-up"),
+  { description = "focus up (layout-aware)" }
+)
+bind(
+  "SUPER",
+  "down",
+  exec_cmd("$HOME/.config/hypr/scripts/LayoutKeybindDispatch.sh focus-down"),
+  { description = "focus down (layout-aware)" }
+)
+bind("SUPER", "tab", dispatch("workspace", "m+1"), { description = "next workspace" })
+bind("SUPER SHIFT", "tab", dispatch("workspace", "m-1"), { description = "previous workspace" })
+local qs_hyprview_layout = "smartgrid"
+bind(
+  "SUPER CTRL",
+  "tab",
+  exec_cmd("$HOME/.config/hypr/scripts/toggle-qs-hyprview.sh " .. qs_hyprview_layout),
+  { description = "Hyprview Toggle" }
+)
 bind("SUPER SHIFT", "U", dispatch("movetoworkspace", "special"), { description = "move to special workspace" })
 bind("SUPER", "U", dispatch("togglespecialworkspace", ""), { description = "toggle special workspace" })
 bind("SUPER", "code:10", dispatch("workspace", "1"), { description = "workspace 1" })
@@ -544,20 +953,6 @@ bind("SUPER SHIFT", "code:16", dispatch("movetoworkspace", "7"), { description =
 bind("SUPER SHIFT", "code:17", dispatch("movetoworkspace", "8"), { description = "move to workspace 8" })
 bind("SUPER SHIFT", "code:18", dispatch("movetoworkspace", "9"), { description = "move to workspace 9" })
 bind("SUPER SHIFT", "code:19", dispatch("movetoworkspace", "10"), { description = "move to workspace 10" })
--- Keep legacy relative move-to-workspace script binds commented for rollback during Lua API migration.
--- Native movetoworkspace dispatch below replaces LuaMoveWindowWorkspaceRelative.sh usage.
--- bind(
---   "SUPER SHIFT",
---   "bracketleft",
---   exec_cmd("$HOME/.config/hypr/scripts/LuaMoveWindowWorkspaceRelative.sh previous"),
---   { description = "move to previous workspace" }
--- )
--- bind(
---   "SUPER SHIFT",
---   "bracketright",
---   exec_cmd("$HOME/.config/hypr/scripts/LuaMoveWindowWorkspaceRelative.sh next"),
---   { description = "move to next workspace" }
--- )
 bind("SUPER SHIFT", "bracketleft", dispatch("movetoworkspace", "-1"), { description = "move to previous workspace" })
 bind("SUPER SHIFT", "bracketright", dispatch("movetoworkspace", "+1"), { description = "move to next workspace" })
 bind("SUPER CTRL", "code:10", dispatch("movetoworkspacesilent", "1"), { description = "move silently to workspace 1" })
@@ -575,20 +970,6 @@ bind(
   dispatch("movetoworkspacesilent", "10"),
   { description = "move silently to workspace 10" }
 )
--- Keep legacy silent relative move-to-workspace script binds commented for rollback during Lua API migration.
--- Native movetoworkspacesilent dispatch below replaces LuaMoveWindowWorkspaceRelative.sh usage.
--- bind(
---   "SUPER CTRL",
---   "bracketleft",
---   exec_cmd("$HOME/.config/hypr/scripts/LuaMoveWindowWorkspaceRelative.sh previous"),
---   { description = "move silently to previous workspace" }
--- )
--- bind(
---   "SUPER CTRL",
---   "bracketright",
---   exec_cmd("$HOME/.config/hypr/scripts/LuaMoveWindowWorkspaceRelative.sh next"),
---   { description = "move silently to next workspace" }
--- )
 bind(
   "SUPER CTRL",
   "bracketleft",
@@ -601,37 +982,9 @@ bind(
   dispatch("movetoworkspacesilent", "+1"),
   { description = "move silently to next workspace" }
 )
--- Keep legacy scroll/period/comma workspace focus script binds commented for rollback during Lua API migration.
--- Native workspace dispatch below replaces LuaFocusWorkspaceRelative.sh usage.
--- bind(
---   "SUPER",
---   "mouse_down",
---   exec_cmd("$HOME/.config/hypr/scripts/LuaFocusWorkspaceRelative.sh next"),
---   { description = "next workspace" }
--- )
--- bind(
---   "SUPER",
---   "mouse_up",
---   exec_cmd("$HOME/.config/hypr/scripts/LuaFocusWorkspaceRelative.sh previous"),
---   { description = "previous workspace" }
--- )
--- bind(
---   "SUPER",
---   "period",
---   exec_cmd("$HOME/.config/hypr/scripts/LuaFocusWorkspaceRelative.sh next"),
---   { description = "next workspace" }
--- )
--- bind(
---   "SUPER",
---   "comma",
---   exec_cmd("$HOME/.config/hypr/scripts/LuaFocusWorkspaceRelative.sh previous"),
---   { description = "previous workspace" }
--- )
 bind("SUPER", "mouse_down", dispatch("workspace", "e+1"), { description = "next workspace" })
 bind("SUPER", "mouse_up", dispatch("workspace", "e-1"), { description = "previous workspace" })
 bind("SUPER", "period", dispatch("workspace", "e+1"), { description = "next workspace" })
 bind("SUPER", "comma", dispatch("workspace", "e-1"), { description = "previous workspace" })
-
--- Section: Mouse drag/resize bindings
-bindm("SUPER", "mouse:272", "movewindow", "move window")
-bindm("SUPER", "mouse:273", "resizewindow", "resize window")
+bind("SUPER", "mouse:272", dispatch("movewindow", ""), { description = "move window" })
+bind("SUPER", "mouse:273", dispatch("resizewindow", ""), { description = "resize window" })
