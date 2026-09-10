@@ -8,8 +8,9 @@ local function apply_layer_rule(rule)
   end
 end
 
+-- Converted from configs/LayerRules.conf
 apply_layer_rule({
-  name = "layerrule-001",
+  name = "system-layer-layerrule-001",
   match = {
     namespace = "rofi",
   },
@@ -19,7 +20,7 @@ apply_layer_rule({
 })
 
 apply_layer_rule({
-  name = "layerrule-002",
+  name = "system-layer-layerrule-002",
   match = {
     namespace = "notifications",
   },
@@ -29,7 +30,7 @@ apply_layer_rule({
 })
 
 apply_layer_rule({
-  name = "layerrule-003",
+  name = "system-layer-layerrule-003",
   match = {
     namespace = "quickshell:overview",
   },
@@ -38,7 +39,25 @@ apply_layer_rule({
 })
 
 apply_layer_rule({
-  name = "layerrule-004",
+  name = "system-layer-layerrule-004",
+  match = {
+    namespace = "quickshell:expose",
+  },
+  dim_around = true,
+})
+
+apply_layer_rule({
+  name = "system-layer-layerrule-005",
+  match = {
+    namespace = "quickshell:expose",
+  },
+  blur = true,
+  ignore_alpha = 0,
+  xray = true,
+})
+
+apply_layer_rule({
+  name = "system-layer-layerrule-006",
   match = {
     namespace = "wallpaper",
   },
@@ -47,16 +66,7 @@ apply_layer_rule({
 })
 
 apply_layer_rule({
-  name = "layerrule-005",
-  match = {
-    namespace = "swaync-control-center",
-  },
-  blur = true,
-  ignore_alpha = 0,
-})
-
-apply_layer_rule({
-  name = "layerrule-006",
+  name = "system-layer-layerrule-007",
   match = {
     namespace = "swaync-notification-window",
   },
@@ -65,7 +75,7 @@ apply_layer_rule({
 })
 
 apply_layer_rule({
-  name = "layerrule-007",
+  name = "system-layer-layerrule-008",
   match = {
     namespace = "com.aurora.keybinds_help",
   },
@@ -74,7 +84,7 @@ apply_layer_rule({
 })
 
 apply_layer_rule({
-  name = "layerrule-008",
+  name = "system-layer-layerrule-009",
   match = {
     namespace = "logout_dialog",
   },

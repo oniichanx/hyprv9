@@ -381,21 +381,14 @@ end
 -- Converted from configs/Keybinds.conf
 bind(
   "SUPER",
-  "D",
-  exec_cmd("pkill rofi || true; $HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show drun -modi drun,filebrowser,run,window -config $HOME/.config/hypr/rofi/config.rasi"),
+  "SPACE",
+  exec_cmd("pkill rofi || true; $HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show drun -modi drun,filebrowser,run,window -config $HOME/.config/rofi/config.rasi"),
   { description = "app launcher" }
 )
 bind("SUPER", "B", exec_cmd('xdg-open "https://"'), { description = "open default browser" })
-bind("SUPER", "A", exec_cmd("$HOME/.config/hypr/scripts/OverviewToggle.sh"), { description = "desktop overview" })
-bind(
-  "SUPER CTRL",
-  "A",
-  exec_cmd("pkill rofi || true && ags -t 'overview'"),
-  { description = "Ags overview" }
-)
 bind(
   "SUPER",
-  "Return",
+  "Q",
   exec_cmd("$HOME/.config/hypr/scripts/LaunchTerminal.sh '$term'"),
   { description = "Open terminal" }
 )
@@ -414,23 +407,23 @@ bind(
 )
 bind("SUPER", "H", exec_cmd("$HOME/.config/hypr/scripts/KeyHints.sh"), { description = "help / cheat sheet" })
 bind("SUPER ALT", "R", exec_cmd("$HOME/.config/hypr/scripts/Refresh.sh"), { description = "refresh bar and menus" })
-bind("SUPER ALT", "E", exec_cmd("$HOME/.config/hypr/scripts/RofiEmoji.sh"), { description = "emoji menu" })
+bind("SUPER SHIFT", "E", exec_cmd("$HOME/.config/hypr/scripts/RofiEmoji.sh"), { description = "emoji menu" })
 bind("SUPER", "S", exec_cmd("$HOME/.config/hypr/scripts/RofiSearch.sh"), { description = "web search" })
 bind(
   "SUPER CTRL",
   "S",
-  exec_cmd("$HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show window -config $HOME/.config/hypr/rofi/config.rasi"),
+  exec_cmd("$HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show window -config $HOME/.config/rofi/config.rasi"),
   { description = "window switcher" }
 )
 bind("SUPER ALT", "O", exec_cmd("$HOME/.config/hypr/scripts/ChangeBlur.sh"), { description = "toggle blur" })
-bind("SUPER SHIFT", "G", exec_cmd("$HOME/.config/hypr/scripts/GameMode.sh"), { description = "toggle game mode" })
+bind("SUPER ALT", "G", exec_cmd("$HOME/.config/hypr/scripts/GameMode.sh"), { description = "toggle game mode" })
 bind(
   "SUPER ALT",
   "L",
   exec_cmd("$HOME/.config/hypr/scripts/ChangeLayout.sh toggle"),
   { description = "toggle layouts" }
 )
-bind("SUPER ALT", "V", exec_cmd("$HOME/.config/hypr/scripts/ClipManager.sh"), { description = "clipboard manager" })
+bind("ALT", "V", exec_cmd("$HOME/.config/hypr/scripts/ClipManager.sh"), { description = "clipboard manager" })
 bind(
   "SUPER CTRL",
   "R",
@@ -450,12 +443,6 @@ bind(
   { description = "Kitty theme selector" }
 )
 bind(
-  "SUPER CTRL",
-  "G",
-  exec_cmd("$HOME/.config/hypr/scripts/Ghostty_themes.sh"),
-  { description = "Ghostty theme selector" }
-)
-bind(
   "SUPER SHIFT",
   "B",
   exec_cmd("$HOME/.config/hypr/UserScripts/RainbowBorders-low-cpu.sh  --run-once"),
@@ -473,9 +460,9 @@ bind(
   exec_cmd("$HOME/.config/hypr/scripts/hyprshot.sh -m region -o $HOME/Pictures/Screenshots"),
   { description = "Hyprshot Screen Capture" }
 )
-bind("SUPER SHIFT", "F", dispatch("fullscreen", ""), { description = "fullscreen" })
-bind("SUPER", "F", dispatch("fullscreen", "1"), { description = "maximize window" })
-bind("SUPER", "SPACE", dispatch("togglefloating", ""), { description = "Float current window" })
+bind("SUPER ALT", "F", dispatch("fullscreen", ""), { description = "fullscreen" })
+bind("SUPER CTRL", "F", dispatch("fullscreen", "1"), { description = "maximize window" })
+bind("SUPER", "V", dispatch("togglefloating", ""), { description = "Float current window" })
 bind(
   "SUPER ALT",
   "SPACE",
@@ -507,20 +494,20 @@ bind(
   { description = "zoom out" }
 )
 bind("SUPER CTRL ALT", "B", exec_cmd("pkill -SIGUSR1 waybar"), { description = "toggle waybar on/off" })
-bind("SUPER CTRL", "B", exec_cmd("$HOME/.config/hypr/scripts/WaybarStyles.sh"), { description = "waybar styles menu" })
-bind("SUPER ALT", "B", exec_cmd("$HOME/.config/hypr/scripts/WaybarLayout.sh"), { description = "waybar layout menu" })
+bind("SUPER", "Y", exec_cmd("$HOME/.config/hypr/scripts/WaybarStyles.sh"), { description = "waybar styles menu" })
+bind("SUPER", "T", exec_cmd("$HOME/.config/hypr/scripts/WaybarLayout.sh"), { description = "waybar layout menu" })
 bind(
   "SUPER",
   "N",
   exec_cmd("$HOME/.config/hypr/scripts/Hyprsunset.sh toggle"),
   { description = "Toggle Hyprsunset - night light" }
 )
-bind("SUPER SHIFT", "M", exec_cmd("$HOME/.config/hypr/UserScripts/RofiBeats.sh"), { description = "online music" })
-bind("SUPER", "W", exec_cmd("$HOME/.config/hypr/scripts/WallpaperSelect.sh"), { description = "select wallpaper" })
+bind("SUPER ALT", "M", exec_cmd("$HOME/.config/hypr/UserScripts/RofiBeats.sh"), { description = "online music" })
+bind("SUPER", "U", exec_cmd("$HOME/.config/hypr/UserScripts/WallpaperSelect.sh"), { description = "select wallpaper" })
 bind(
-  "SUPER SHIFT",
+  "SUPER ALT",
   "W",
-  exec_cmd("$HOME/.config/hypr/scripts/WallpaperEffects.sh"),
+  exec_cmd("$HOME/.config/hypr/UserScripts/WallpaperEffects.sh"),
   { description = "wallpaper effects" }
 )
 bind(
@@ -575,8 +562,8 @@ bind(
   dispatch("movecurrentworkspacetomonitor", "d"),
   { description = "move workspace to down monitor" }
 )
-bind("CTRL ALT", "Delete", exec_cmd("$HOME/.config/hypr/scripts/Logout.sh"), { description = "exit Hyprland" })
-bind("SUPER", "Q", dispatch("killactive", ""), { description = "close active window" })
+bind("SUPER SHIFT", "M", exec_cmd("$HOME/.config/hypr/scripts/Logout.sh"), { description = "exit Hyprland" })
+bind("SUPER", "F4", dispatch("killactive", ""), { description = "close active window" })
 bind(
   "SUPER SHIFT",
   "Q",
@@ -584,13 +571,13 @@ bind(
   { description = "Terminate active process" }
 )
 bind("CTRL ALT", "L", exec_cmd("$HOME/.config/hypr/scripts/LockScreen.sh"), { description = "lock screen" })
-bind("CTRL ALT", "P", exec_cmd("$HOME/.config/hypr/scripts/Wlogout.sh"), { description = "powermenu" })
+bind("SUPER", "M", exec_cmd("$HOME/.config/hypr/scripts/Wlogout.sh"), { description = "powermenu" })
 bind("CTRL ALT", "D", exec_cmd("$HOME/.config/hypr/scripts/Dock.sh"), { description = "toggle dock" })
 bind("SUPER SHIFT", "N", exec_cmd("swaync-client -t -sw"), { description = "notification panel" })
 bind(
-  "SUPER SHIFT",
+  "SUPER ALT",
   "E",
-  exec_cmd("$HOME/.config/hypr/scripts/Kool_Quick_Settings.sh"),
+  exec_cmd("$HOME/.config/hypr/UserScripts/QuickEdit.sh"),
   { description = "Quick settings menu" }
 )
 bind("SUPER CTRL", "D", dispatch("layoutmsg", "removemaster"), { description = "remove master" })
@@ -610,7 +597,7 @@ bind(
 bind("SUPER CTRL", "Return", dispatch("layoutmsg", "swapwithmaster"), { description = "swap with master" })
 bind("SUPER SHIFT", "I", dispatch("layoutmsg", "togglesplit"), { description = "toggle split (dwindle)" })
 bind("SUPER", "P", dispatch("pseudo", ""), { description = "toggle pseudo (dwindle)" })
-bind("SUPER", "M", exec_cmd("hyprctl dispatch splitratio 0.3"), { description = "set split ratio 0.3" })
+bind("CTRL ALT", "P", exec_cmd("hyprctl dispatch splitratio 0.3"), { description = "set split ratio 0.3" })
 bind(
   "SUPER ALT",
   "1",
@@ -932,7 +919,7 @@ bind(
   { description = "Hyprview Toggle" }
 )
 bind("SUPER SHIFT", "U", dispatch("movetoworkspace", "special"), { description = "move to special workspace" })
-bind("SUPER", "U", dispatch("togglespecialworkspace", ""), { description = "toggle special workspace" })
+bind("SUPER ALT", "U", dispatch("togglespecialworkspace", ""), { description = "toggle special workspace" })
 bind("SUPER", "code:10", dispatch("workspace", "1"), { description = "workspace 1" })
 bind("SUPER", "code:11", dispatch("workspace", "2"), { description = "workspace 2" })
 bind("SUPER", "code:12", dispatch("workspace", "3"), { description = "workspace 3" })
