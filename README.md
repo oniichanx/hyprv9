@@ -750,4 +750,39 @@ sudo nano /etc/sddm.conf.d/10-theme.conf
 
 </details>
 
+<details>
+  <summary><strong> If You USB-Headphone: no sound below 25% volume level </strong></summary>
+
+---
+This issue https://gitlab.freedesktop.org/pipewire/pipewire/-/work_items/1117
+
+- DEPENDENCIES
+```
+mkdir -p ~/.config/wireplumber/wireplumber.conf.d
+```
+```
+nano ~/.config/wireplumber/wireplumber.conf.d/alsa-ignore-dB.conf
+```
+```
+monitor.alsa.rules = [
+  {
+    matches = [
+      {
+        device.name = "~alsa_card.*"
+      }
+    ]
+    actions = {
+      update-props = {
+        api.alsa.ignore-dB = true
+      }
+    }
+  }
+]
+```
+- Done
+
+---
+
+</details>
+
 </details>
