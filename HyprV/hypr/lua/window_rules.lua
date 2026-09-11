@@ -7,6 +7,7 @@ local function apply_window_rule(rule)
   end
 end
 
+
 apply_window_rule({
   name = "tag-browser-firefox",
   match = {
@@ -761,6 +762,7 @@ apply_window_rule({
   no_initial_focus = true,
 })
 
+
 apply_window_rule({
   name = "Picture-in-Picture",
   match = {
@@ -1067,7 +1069,6 @@ apply_window_rule({
   center = true,
   size = "(monitor_w*0.6) (monitor_h*0.65)",
 })
-
 apply_window_rule({
   name = "Megasync",
   match = {
