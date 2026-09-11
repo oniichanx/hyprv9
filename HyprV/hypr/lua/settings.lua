@@ -17,6 +17,17 @@ hl.config({
   },
 })
 
+hl.device({
+    name = "geonworks-venom60he-7u-keyboard",
+    repeat_rate=50,
+    repeat_delay=500,
+    middle_button_emulation=0,
+})
+hl.device({
+    name = "compx-garuda-pro-wireless",
+    sensitivity = -0.5,
+})
+
 hl.config({
   master = {
     new_status = "slave",
@@ -50,7 +61,7 @@ hl.config({
 
 hl.config({
   input = {
-    kb_layout = "us",
+    kb_layout = "us,th",
     kb_variant = "",
     kb_model = "pc105",
     kb_options = "",
@@ -204,9 +215,16 @@ hl.config({
 })
 
 hl.config({
+  opengl = {
+    nvidia_anti_flicker = true,
+    --force_introspection = 1,
+  },
+})
+
+hl.config({
   cursor = {
     sync_gsettings_theme = true,
-    no_hardware_cursors = 0,
+    no_hardware_cursors = 2,
     enable_hyprcursor = true,
     warp_on_change_workspace = 2,
     no_warps = true,
