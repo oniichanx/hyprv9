@@ -1,7 +1,7 @@
 /* ---- 💫 https://github.com/oniichanx 💫 ---- */
 /* Layout Selector (compact) */
 
-@import "~/.config/hypr/rofi/config-rofi-theme.rasi"
+@import "~/.config/rofi/config-rofi-theme.rasi"
 
 /* ---- Mainbox ---- */
 mainbox {

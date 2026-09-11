@@ -14,5 +14,5 @@ configuration {
   }
  }
 
-@theme "~/.config/hypr/rofi/dwm-dmenu-horiz.rasi"
+@theme "~/.config/rofi/dwm-dmenu-horiz.rasi"
 

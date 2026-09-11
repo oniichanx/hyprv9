@@ -9,7 +9,7 @@ fallback_kitty_config="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty.conf"
 kitty_config="$user_kitty_config"
 iDIR="${XDG_CONFIG_HOME:-$HOME/.config}/swaync/images" # For notifications
 rofi_theme_for_this_script="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/config-kitty-theme.rasi"
-wallust_refresh_script="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts/WallustSwww.sh"
+wallust_refresh_script="${XDG_CONFIG_HOME:-$HOME/.config}/scripts/WallustSwww.sh"
 debug_log="${XDG_CACHE_HOME:-$HOME/.cache}/kooldots-kitty-themes.log"
 
 ensure_managed_kitty_config() {

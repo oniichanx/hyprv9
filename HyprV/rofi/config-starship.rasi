@@ -1,7 +1,7 @@
 /* ---- 💫 https://github.com/oniichanx 💫 ---- */
 /* Starship Selector (tall) */
 
-@import "~/.config/hypr/rofi/config-rofi-theme.rasi"
+@import "~/.config/rofi/config-rofi-theme.rasi"
 
 /* ---- Mainbox ---- */
 mainbox {

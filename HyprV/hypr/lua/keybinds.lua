@@ -55,7 +55,7 @@ local app_binds = {
   {
     "SUPER",
     "D",
-    "pkill rofi || true; $HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show drun -modi drun,filebrowser,run,window -config $HOME/.config/hypr/rofi/config.rasi",
+    "pkill rofi || true; $HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show drun -modi drun,filebrowser,run,window -config $HOME/.config/rofi/config.rasi",
     "app launcher",
   },
   { "SUPER", "SPACE", "pkill rofi || true && rofi -show drun -modi drun,filebrowser,run,window", "app launcher" },
@@ -70,7 +70,7 @@ local app_binds = {
   {
     "SUPER CTRL",
     "S",
-    "$HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show window -config $HOME/.config/hypr/rofi/config.rasi",
+    "$HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show window -config $HOME/.config/rofi/config.rasi",
     "window switcher",
   },
   { "SUPER ALT", "O", "$HOME/.config/hypr/scripts/ChangeBlur.sh", "toggle blur" },

@@ -15,7 +15,7 @@ focused_monitor=$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .name')
 per_monitor_wallpaper_base="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallpaper_effects/.wallpaper_base_${focused_monitor}"
 per_monitor_wallpaper_current="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallpaper_effects/.wallpaper_current_${focused_monitor}"
 per_monitor_wallpaper_link="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/.current_wallpaper_${focused_monitor}"
-rofi_theme="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/config-wallpaper-effect.rasi"
+rofi_theme="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/config-wallpaper-effect.rasi"
 
 # Directory for swaync
 iDIR="${XDG_CONFIG_HOME:-$HOME/.config}/swaync/images"
