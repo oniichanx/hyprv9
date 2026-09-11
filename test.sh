@@ -356,6 +356,9 @@ if [[ $CFG == "y" ]]; then
     # [rofi] cp — config.rasi + themes/ + launcher scripts
     cp -r ~/.config/HyprV/rofi/* ~/.config/rofi/ 2>/dev/null || true
 
+    # [starship] cp — starship
+    cp -r ~/.config/HyprV/starship/ ~/.config/hypr/starship 2>/dev/null || true
+
     # [wallpaper] cp ไปไว้ ~/Pictures/ ให้ swww ใช้ตอน startup
     cp -r ~/.config/HyprV/Pictures ~/ 2>/dev/null || true
 
