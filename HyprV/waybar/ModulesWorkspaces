@@ -165,17 +165,16 @@
 		"10": "10",
 	},
 },
-// NUMBERS and ICONS style with window rewrite
+// NUMBERS and ICONS style with window rewrite 
 "hyprland/workspaces#rw": {
-    "disable-scroll": true,
-    "all-outputs": false,
-    "warp-on-scroll": false,
-    "sort-by-number": true,
-    "show-special": false,
-    "on-click": "activate",
-    "on-scroll-up": "hyprctl dispatch workspace e+1",
-    "on-scroll-down": "hyprctl dispatch workspace e-1",
-
+	"disable-scroll": true,
+	"all-outputs": true,
+	"warp-on-scroll": false,
+	"sort-by-number": true,
+	"show-special": false,
+	"on-click": "activate",
+	"on-scroll-up": "hyprctl dispatch workspace e+1",
+	"on-scroll-down": "hyprctl dispatch workspace e-1",
     "persistent-workspaces": {
         "DP-1": [1, 2, 3, 4, 5],
         "DP-2": [1, 2, 3, 4, 5],
