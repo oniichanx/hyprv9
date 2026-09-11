@@ -156,9 +156,9 @@ nvidia_stage=(
 )
 
 install_stage=(
-    kitty swaync waybar awww wallust yad bc rofi-wayland
+    kitty swaync waybar awww wallust-git yad bc rofi-wayland
     imagemagick bibata-cursor-theme-bin wlogout
-    swappy grim slurp thunar btop firefox librewolf-bin thunderbird mpv
+    swappy grim slurp thunar btop firefox librewolf thunderbird mpv
     pamixer pavucontrol brightnessctl bluez bluez-utils blueman
     network-manager-applet gvfs thunar-archive-plugin file-roller starship
     papirus-icon-theme ttf-jetbrains-mono ttf-jetbrains-mono-nerd
