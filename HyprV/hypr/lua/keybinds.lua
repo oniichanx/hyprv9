@@ -202,15 +202,27 @@ bind("SUPER", "V", dispatch("togglefloating", ""), { description = "Float curren
 bind("SUPER CTRL", "O", dispatch("setprop", "active opaque toggle"), { description = "toggle active window opacity" })
 bind(
   "ALT",
-  "SHIFT_L",
-  dispatch("switch keyboard layout globally", "exec, $HOME/.config/hypr/scripts/KeyboardLayout.sh switch"),
-  { locked = true, description = "switch keyboard layout globally" }
+  "Shift_L",
+  exec_cmd("$HOME/.config/hypr/scripts/KeyboardLayout.sh switch"),
+  { description = "switch keyboard layout globally", locked = true }
 )
 bind(
-  "SHIFT_L",
-  "ALT_L",
-  dispatch("switch keyboard layout per-window", "exec, $HOME/.config/hypr/scripts/Tak0-Per-Window-Switch.sh"),
-  { locked = true, description = "switch keyboard layout per-window" }
+  "ALT",
+  "Shift_R",
+  exec_cmd("$HOME/.config/hypr/scripts/KeyboardLayout.sh switch"),
+  { description = "switch keyboard layout globally (right shift)", locked = true }
+)
+bind(
+  "SHIFT",
+  "Alt_L",
+  exec_cmd("$HOME/.config/hypr/scripts/Tak0-Per-Window-Switch.sh"),
+  { description = "switch keyboard layout per-window", locked = true }
+)
+bind(
+  "SHIFT",
+  "Alt_R",
+  exec_cmd("$HOME/.config/hypr/scripts/Tak0-Per-Window-Switch.sh"),
+  { description = "switch keyboard layout per-window (right alt)", locked = true }
 )
 bind(
   "SUPER CTRL",
