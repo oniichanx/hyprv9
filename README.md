@@ -757,8 +757,14 @@ sudo nano /etc/sddm.conf.d/10-theme.conf
 This issue https://www.reddit.com/r/swaywm/comments/uyfk7i/remove_alt_keyboard_bindings_on_firefox/
 
 - DEPENDENCIES
+
+Go to about:config using the URL bar.
 ```
-Go to `about:config` using the URL bar. Once there search for this: `ui.key.menuAccessKeyFocuses` and toggle it to `FALSE`. Problem solved. 
+about:config
+```
+Once there search for this: `ui.key.menuAccessKeyFocuses` and toggle it to `FALSE`. Problem solved.
+```
+ui.key.menuAccessKeyFocuses
 ```
 - Done
 
