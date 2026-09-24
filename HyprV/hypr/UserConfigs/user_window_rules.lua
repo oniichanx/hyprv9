@@ -8,7 +8,7 @@
 -- Add, override, or customize personal window rules here.
 --
 -- =============================================================================
--- WINDOW RULE SYNTAX & PROPERTIES (KoolDots Lua)
+-- WINDOW RULE SYNTAX & PROPERTIES (oniichanx Lua)
 -- =============================================================================
 -- • apply_window_rule({
 --     name = "unique-rule-identifier",

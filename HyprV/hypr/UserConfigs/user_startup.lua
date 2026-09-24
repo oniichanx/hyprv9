@@ -10,7 +10,7 @@
 -- =============================================================================
 -- USER STARTUP RULES & SYNTAX
 -- =============================================================================
--- In KoolDots Lua configuration, user autostart commands are defined in this file.
+-- In oniichanx Lua configuration, user autostart commands are defined in this file.
 --
 -- How it works:
 -- 1. Add command strings to the `startup_commands` table below (or call `exec_once("command")`).

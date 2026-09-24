@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==================================================
-#  KoolDots (2026)
+#  oniichanx (2026)
 #  Project URL: https://github.com/oniichanx
 #  License: GNU GPLv3
 #  SPDX-License-Identifier: GPL-3.0-or-later
