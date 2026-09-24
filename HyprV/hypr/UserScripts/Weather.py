@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /* ---- 💫 https://github.com/oniichanx 💫 ---- */  #
-# original code https://gist.github.com/Surendrajat/ff3876fd2166dd86fb71180f4e9342d7
-# weather using python
+# Rewritten to use Open-Meteo APIs (worldwide, no API key) for robust weather data.
+# Outputs Waybar-compatible JSON and a simple text cache.
 
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ class WeatherData:
 # Examples (zsh):
 #   # One-off run
 #   # WEATHER_UNITS can be "metric" or "imperial"
-#   WEATHER_UNITS=imperial WEATHER_PLACE="Concord, NH" python3 ${XDG_CONFIG_HOME:-$HOME/.config}/hypr/UserScripts/Weather.py
+#   WEATHER_UNITS=imperial WEATHER_PLACE="Concord, NH" python3 ~/.config/hypr/UserScripts/Weather.py
 #
 #   # Persist in current shell session
 #   export WEATHER_UNITS=imperial

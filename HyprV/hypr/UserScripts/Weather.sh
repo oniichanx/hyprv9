@@ -1,7 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # /* ---- 💫 https://github.com/oniichanx 💫 ---- */  ##
 # weather info from wttr. https://github.com/chubin/wttr.in
 # Remember to add city 
+# Function to get current city from IP address with fallback
 
 # Get your current location with your IP adress 
 get_current_city() {
