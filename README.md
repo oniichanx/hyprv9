@@ -751,6 +751,22 @@ sudo nano /etc/sddm.conf.d/10-theme.conf
 </details>
 
 <details>
+  <summary><strong> If You have issue with change lang on firefox it show menu bar do this </strong></summary>
+
+---
+This issue https://www.reddit.com/r/swaywm/comments/uyfk7i/remove_alt_keyboard_bindings_on_firefox/
+
+- DEPENDENCIES
+```
+Go to `about:config` using the URL bar. Once there search for this: `ui.key.menuAccessKeyFocuses` and toggle it to `FALSE`. Problem solved. 
+```
+- Done
+
+---
+
+</details>
+
+<details>
   <summary><strong> If You USB-Headphone: no sound below 25% volume level </strong></summary>
 
 ---
