@@ -378,7 +378,9 @@ if [[ $CFG == "y" ]]; then
 
     # [wlogout] ln: layout, icons/, style.css — check: ls -la ~/.config/wlogout/
     ln -sf ~/.config/HyprV/wlogout/layout ~/.config/wlogout/layout 2>/dev/null || true
+    ln -sf ~/.config/HyprV/wlogout/.current_theme ~/.config/wlogout/.current_theme 2>/dev/null || true
     ln -sf ~/.config/HyprV/wlogout/icons ~/.config/wlogout/icons 2>/dev/null || true
+    ln -sf ~/.config/HyprV/wlogout/themes ~/.config/wlogout/themes 2>/dev/null || true
     ln -sf ~/.config/HyprV/wlogout/style.css ~/.config/wlogout/style.css 2>/dev/null || true
 
     # [waybar modules] ln: Modules, Custom, Groups, Workspaces, Vertical — reload: killall waybar && waybar &

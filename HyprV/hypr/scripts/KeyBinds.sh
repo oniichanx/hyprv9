@@ -13,7 +13,7 @@ fi
 # define the config files
 config_home="${XDG_CONFIG_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}}"
 hypr_dir="$config_home/hypr"
-keybinds_conf="$hypr_dir/configs/Keybinds.conf"
+keybinds_conf="$hypr_dir/UserConfigs/KeyBinds.conf"
 system_laptop_conf="$hypr_dir/configs/Laptops.conf"
 user_keybinds_conf="$hypr_dir/UserConfigs/UserKeybinds.conf"
 laptop_conf="$hypr_dir/UserConfigs/Laptops.conf"
@@ -25,31 +25,15 @@ lua_overrides="$hypr_dir/UserConfigs/user_overrides.lua"
 rofi_theme="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/config-keybinds.rasi"
 msg='☣️ NOTE ☣️: Clicking with Mouse or Pressing ENTER will have NO function'
 
-# detect active Hyprland config mode (Lua entrypoint vs legacy .conf includes)
-lua_entry="$hypr_dir/hyprland.lua"
-legacy_lua_entry="$config_home/hyprland.lua"
-if [[ -f "$lua_entry" || -f "$legacy_lua_entry" ]]; then
-  hypr_config_mode="lua"
-else
-  hypr_config_mode="conf"
+# collect raw bind lines from available Lua files
+files=("$lua_keybinds_conf")
+if [[ -f "$lua_system_keybinds" ]]; then
+  files+=("$lua_system_keybinds")
+elif [[ -f "$lua_legacy_system_keybinds" ]]; then
+  files+=("$lua_legacy_system_keybinds")
 fi
-
-# collect raw bind lines from available files
-if [[ "$hypr_config_mode" == "lua" ]]; then
-  files=("$lua_keybinds_conf")
-  if [[ -f "$lua_system_keybinds" ]]; then
-    files+=("$lua_system_keybinds")
-  elif [[ -f "$lua_legacy_system_keybinds" ]]; then
-    files+=("$lua_legacy_system_keybinds")
-  fi
-  [[ -f "$lua_overrides" ]] && files+=("$lua_overrides")
-  [[ -f "$lua_user_keybinds" ]] && files+=("$lua_user_keybinds")
-else
-  files=("$keybinds_conf")
-  [[ -f "$system_laptop_conf" ]] && files+=("$system_laptop_conf")
-  [[ -f "$laptop_conf" ]] && files+=("$laptop_conf")
-  [[ -f "$user_keybinds_conf" ]] && files+=("$user_keybinds_conf")
-fi
+[[ -f "$lua_overrides" ]] && files+=("$lua_overrides")
+[[ -f "$lua_user_keybinds" ]] && files+=("$lua_user_keybinds")
 
 # Parse binds using the python script for speed
 # The last argument must be the user config for override logic to work correctly

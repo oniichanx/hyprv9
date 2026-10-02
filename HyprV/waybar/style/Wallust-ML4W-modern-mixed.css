@@ -1,7 +1,7 @@
-/* ---- 💫 https://github.com/oniichanx 💫 ---- */
+/* ---- 💫 https://github.com/LinuxBeginnings 💫 ---- */
 /*  ml4w-modern-mixed */
 
-@import '../../.config/waybar/wallust/colors-waybar.css';
+@import '../../../.config/hypr/waybar/wallust/colors-waybar.css';
 
 @define-color backgroundlight @color12;
 @define-color backgrounddark @background;
@@ -133,6 +133,7 @@ window#waybar.empty #window {
 #idle_inhibitor,
 #keyboard-state,
 #memory,
+#submap,
 #mode,
 #mpris,
 #network,
@@ -427,4 +428,9 @@ background-color: @color13;
   -gtk-icon-style: symbolic;
   -gtk-icon-effect: none;
   opacity: 1;
+}
+
+/*-----Submap indicator (visible only while a submap is active)----*/
+#submap {
+  margin-right: 8px;
 }

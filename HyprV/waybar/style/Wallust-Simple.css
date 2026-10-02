@@ -1,4 +1,4 @@
-/* ----------- 💫 https://github.com/oniichanx 💫 -------- */
+/* ----------- 💫 https://github.com/LinuxBeginnings 💫 -------- */
 /* Wallust - Simple */
 
 * {
@@ -11,7 +11,7 @@
   font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
-@import "../../.config/waybar/wallust/colors-waybar.css";
+@import "../../../.config/hypr/waybar/wallust/colors-waybar.css";
 
 #waybar.empty,
 #waybar.tiled,
@@ -101,6 +101,7 @@ tooltip {
 #idle_inhibitor,
 #keyboard-state,
 #memory,
+#submap,
 #mode,
 #mpris,
 #network,
@@ -246,4 +247,9 @@ tooltip {
   -gtk-icon-style: symbolic;
   -gtk-icon-effect: none;
   opacity: 1;
+}
+
+/*-----Submap indicator (visible only while a submap is active)----*/
+#submap {
+  margin-right: 8px;
 }

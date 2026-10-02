@@ -144,3 +144,5 @@ main() {
 if pidof rofi > /dev/null; then
   pkill rofi
 fi
+
+main

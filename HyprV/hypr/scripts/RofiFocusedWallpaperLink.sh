@@ -139,7 +139,7 @@ resolve_focused_wallpaper() {
   local per_monitor_current=""
 
   if [[ -n "$monitor" ]]; then
-    per_monitor_link="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/.current_wallpaper_${monitor}"
+    per_monitor_link="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/.current_wallpaper_${monitor}"
     per_monitor_current="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/wallpaper_effects/.wallpaper_current_${monitor}"
 
     path="$(read_wallpaper_from_query "$monitor" 2>/dev/null || true)"

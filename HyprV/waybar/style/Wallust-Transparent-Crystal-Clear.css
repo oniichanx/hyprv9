@@ -1,8 +1,8 @@
-/* ----------- 💫 https://github.com/oniichanx 💫 -------- */
+/* ----------- 💫 https://github.com/LinuxBeginnings 💫 -------- */
 /* ....Wallust Transparent - Crystal Clear........ */
 /* --- 👍 original designed by https://github.com/Krautt  👍 --- */
 
-@import "../../.config/waybar/wallust/colors-waybar.css";
+@import "../../../.config/hypr/waybar/wallust/colors-waybar.css";
 
 @define-color critical #ff0000; /* critical color */
 @define-color warning #f3f809; /* warning color */
@@ -117,6 +117,7 @@ tooltip {
 #idle_inhibitor,
 #keyboard-state,
 #memory,
+#submap,
 #mode,
 #mpris,
 #network,
@@ -244,4 +245,9 @@ tooltip {
   -gtk-icon-style: symbolic;
   -gtk-icon-effect: none;
   opacity: 1;
+}
+
+/*-----Submap indicator (visible only while a submap is active)----*/
+#submap {
+  margin-right: 8px;
 }

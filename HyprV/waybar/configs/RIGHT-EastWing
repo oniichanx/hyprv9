@@ -4,12 +4,12 @@
 
 {
 "include": [
-  "$HOME/.config/waybar/Modules",
-  "$HOME/.config/waybar/ModulesWorkspaces",
-  "$HOME/.config/waybar/ModulesCustom",
-  "$HOME/.config/waybar/ModulesGroups",
-  "$HOME/.config/waybar/UserModules",
-  "$HOME/.config/waybar/ModulesVertical",
+  "$HOME/.config/hypr/waybar/Modules",
+  "$HOME/.config/hypr/waybar/ModulesWorkspaces",
+  "$HOME/.config/hypr/waybar/ModulesCustom",
+  "$HOME/.config/hypr/waybar/ModulesGroups",
+  "$HOME/.config/hypr/waybar/UserModules",
+  "$HOME/.config/hypr/waybar/ModulesVertical",
   ],
 "layer": "top",
 "position": "right",
@@ -31,6 +31,7 @@
 ],
 
 "modules-center": [
+	"hyprland/submap",
 	"idle_inhibitor",
 	"hyprland/workspaces",
 ],

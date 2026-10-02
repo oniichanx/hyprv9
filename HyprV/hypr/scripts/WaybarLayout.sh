@@ -5,7 +5,7 @@
 IFS=$'\n\t'
 
 # Define directories
-waybar_layouts="${XDG_CONFIG_HOME:-$HOME/.config}/HyprV/waybar/configs"
+waybar_layouts="${XDG_CONFIG_HOME:-$HOME/.config}/waybar/configs"
 waybar_config="${XDG_CONFIG_HOME:-$HOME/.config}/waybar/config"
 SCRIPTSDIR="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts"
 rofi_config="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/config-waybar-layout.rasi"

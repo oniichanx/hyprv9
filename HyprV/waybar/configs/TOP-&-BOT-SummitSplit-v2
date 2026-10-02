@@ -5,11 +5,11 @@
 [
   {
   "include": [
-  "$HOME/.config/waybar/Modules",
-  "$HOME/.config/waybar/ModulesWorkspaces",
-  "$HOME/.config/waybar/ModulesCustom",
-  "$HOME/.config/waybar/ModulesGroups",
-  "$HOME/.config/waybar/UserModules",
+  "$HOME/.config/hypr/waybar/Modules",
+  "$HOME/.config/hypr/waybar/ModulesWorkspaces",
+  "$HOME/.config/hypr/waybar/ModulesCustom",
+  "$HOME/.config/hypr/waybar/ModulesGroups",
+  "$HOME/.config/hypr/waybar/UserModules",
   ],
     "name": "topbar",
     "layer": "top",
@@ -30,7 +30,7 @@
       "bluetooth",
       "network",
     ],
-    "modules-center": ["hyprland/window"],
+    "modules-center": ["hyprland/submap", "hyprland/window"],
 "modules-right": [
       "mpris",
       "battery",
@@ -45,11 +45,11 @@
 },
   {
   "include": [
-  "$HOME/.config/waybar/Modules",
-  "$HOME/.config/waybar/ModulesWorkspaces",
-  "$HOME/.config/waybar/ModulesCustom",
-  "$HOME/.config/waybar/ModulesGroups",
-  "$HOME/.config/waybar/UserModules",
+  "$HOME/.config/hypr/waybar/Modules",
+  "$HOME/.config/hypr/waybar/ModulesWorkspaces",
+  "$HOME/.config/hypr/waybar/ModulesCustom",
+  "$HOME/.config/hypr/waybar/ModulesGroups",
+  "$HOME/.config/hypr/waybar/UserModules",
   ],
     "name": "bottombar",
     "layer": "top",
@@ -62,7 +62,7 @@
     "gtk-layer-shell": true,
     "reload_style_on_change": true,
     "modules-left": ["hyprland/workspaces#rw"],
-    "modules-center": ["wlr/taskbar"],
+    "modules-center": ["hyprland/submap", "wlr/taskbar"],
     "modules-right": ["tray", "custom/updater", "group/notify"],
   }
 ]

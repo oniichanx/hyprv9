@@ -1,9 +1,9 @@
-/* ---- 💫 https://github.com/oniichanx 💫 ---- */
+/* ---- 💫 https://github.com/LinuxBeginnings 💫 ---- */
 /* Wallust - Chroma Tally v2 */
 
 /* edited by: https://github.com/prateekshukla1108 */
 
-@import "../../.config/waybar/wallust/colors-waybar.css";
+@import "../../../.config/hypr/waybar/wallust/colors-waybar.css";
 
 * {
   font-family: "JetBrainsMono Nerd Font";
@@ -86,6 +86,7 @@ tooltip {
 #idle_inhibitor,
 #keyboard-state,
 #memory,
+#submap,
 #mode,
 #mpris,
 #network,
@@ -311,4 +312,9 @@ tooltip {
   -gtk-icon-style: symbolic;
   -gtk-icon-effect: none;
   opacity: 1;
+}
+
+/*-----Submap indicator (visible only while a submap is active)----*/
+#submap {
+  margin-right: 8px;
 }

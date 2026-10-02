@@ -1,4 +1,4 @@
--- 💫 https://github.com/oniichanx 💫
+-- 💫 https://github.com/LinuxBeginnings 💫
 -- Inspired by amitpadhan525
 -- https://github.com/amitpadhan525
 

@@ -10,31 +10,17 @@ kitty_config="$user_kitty_config"
 iDIR="${XDG_CONFIG_HOME:-$HOME/.config}/swaync/images" # For notifications
 rofi_theme_for_this_script="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/config-kitty-theme.rasi"
 wallust_refresh_script="${XDG_CONFIG_HOME:-$HOME/.config}/scripts/WallustSwww.sh"
-debug_log="${XDG_CACHE_HOME:-$HOME/.cache}/kooldots-kitty-themes.log"
+debug_log="${XDG_CACHE_HOME:-$HOME/.cache}/oniichanx-kitty-themes.log"
 
 ensure_managed_kitty_config() {
   if [ -f "$user_kitty_config" ] && [ -r "$user_kitty_config" ]; then
     kitty_config="$user_kitty_config"
     return 0
   fi
-
-  if [ -r "$fallback_kitty_config" ]; then
-    mkdir -p "$(dirname "$user_kitty_config")" 2>/dev/null || true
-    cp -f "$fallback_kitty_config" "$user_kitty_config" 2>/dev/null || true
-    if [ -f "$user_kitty_config" ] && [ -r "$user_kitty_config" ]; then
-      kitty_config="$user_kitty_config"
-      return 0
-    fi
-  fi
-
-  kitty_config="$fallback_kitty_config"
 }
 
 sync_runtime_kitty_config() {
-  if [ "$kitty_config" != "$fallback_kitty_config" ] && [ -r "$kitty_config" ]; then
-    mkdir -p "$(dirname "$fallback_kitty_config")" 2>/dev/null || true
-    cp -f "$kitty_config" "$fallback_kitty_config" 2>/dev/null || true
-  fi
+  :
 }
 
 # --- Helper Functions ---
@@ -100,7 +86,7 @@ apply_kitty_theme_to_config() {
   cp "$kitty_config" "$temp_kitty_config_file"
 
   local include_target
-  include_target="include ${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty-themes/$(basename "$theme_file_path_to_apply")"
+  include_target="include ${XDG_CONFIG_HOME:-$HOME/.config}/hypr/UserConfigs/kitty-themes/$(basename "$theme_file_path_to_apply")"
 
   sed -i -E '/^[[:space:]]*include[[:space:]]+.*kitty-themes\/.*\.conf[[:space:]]*$/d' "$temp_kitty_config_file"
   if [ -s "$temp_kitty_config_file" ] && [ "$(tail -c1 "$temp_kitty_config_file")" != "" ]; then

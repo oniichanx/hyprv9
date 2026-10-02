@@ -2,56 +2,66 @@
 -- NOTE: wallust-hyprland.conf is hyprlang-sourced in the original config.
 -- Lua parity for importing that file is still evolving; using static color fallbacks here.
 
+local home = os.getenv("HOME") or ""
+local helper_path = home .. "/.config/hypr/lua/user_decorations_helper.lua"
+local ok, helper = pcall(dofile, helper_path)
+local wallust = (ok and helper and helper.load_wallust_colors)
+  and helper.load_wallust_colors(home .. "/.config/hypr/wallust/wallust-hyprland.conf")
+  or {}
+
+local active_col = wallust.color12 or "rgba(8db4ffff)"
+local inactive_col = wallust.color10 or "rgba(5f6578ff)"
+
 hl.config({
-    general = {
-        border_size = 2,
-        gaps_in = 2,
-        gaps_out = 4,
-        col = {
-            active_border = "rgb(cdd6f4)",
-            inactive_border = "rgba(595959aa)",
-        },
+  general = {
+    border_size = 1,
+    gaps_in = 4,
+    gaps_out = 6,
+    col = {
+      active_border = active_col,
+      inactive_border = inactive_col,
     },
+  },
 })
 
 hl.config({
-    decoration = {
-        rounding = 5,
-        active_opacity = 1.0,
-        inactive_opacity = 0.9,
-        fullscreen_opacity = 1.0,
-        dim_inactive = true,
-        dim_strength = 0.1,
-        dim_special = 0.8,
-        shadow = {
-            enabled = true,
-            range = 4,
-            render_power = 3,
-            color = "rgba(1a1a1aee)",
-            color_inactive = "rgba(5f6578ff)",
-        },
-        blur = {
-            enabled = true,
-            size = 6,
-            passes = 3,
-            new_optimizations = true,
-            xray = true,
-            ignore_opacity = true,
-            special = true,
-            popups = true,
-        },
+  decoration = {
+    rounding = 10,
+    active_opacity = 1.0,
+    inactive_opacity = 0.9,
+    fullscreen_opacity = 1.0,
+    dim_inactive = true,
+    dim_strength = 0.1,
+    dim_special = 0.8,
+    shadow = {
+      enabled = true,
+      range = 3,
+      render_power = 1,
+      color = active_col,
+      color_inactive = inactive_col,
     },
+    blur = {
+      enabled = true,
+      size = 6,
+      passes = 3,
+      new_optimizations = true,
+      xray = false,
+      ignore_opacity = true,
+      special = true,
+      popups = true,
+    },
+  },
 })
 
 hl.config({
-    group = {
-        col = {
-            border_active = "rgba(ffffffff)",
-        },
-        groupbar = {
-            col = {
-                active = "rgba(0f111aff)",
-            },
-        },
+  group = {
+    col = {
+      border_active = wallust.color15 or active_col,
     },
+    groupbar = {
+      col = {
+        active = wallust.color0 or "rgba(0f111aff)",
+      },
+    },
+  },
 })

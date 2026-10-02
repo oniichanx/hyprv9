@@ -2,7 +2,6 @@
 # /* ---- 💫 https://github.com/oniichanx 💫 ---- */  ##
 # Not my own work. This was added through Github PR. Credit to original author
 
-#----- Optimized bars animation without much CPU usage increase --------
 set -euo pipefail
 
 # Ensure cava exists

@@ -75,20 +75,20 @@ dec_volume() {
 
 # Toggle Mute
 toggle_mute() {
-    if [ "$(pamixer --get-mute)" == "false" ]; then
-        pamixer -m && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$iDIR/volume-mute.png" " Mute"
-    elif [ "$(pamixer --get-mute)" == "true" ]; then
-        pamixer -u && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$(get_icon)" " Volume:" " Switched ON"
-    fi
+	if [ "$(pamixer --get-mute)" == "false" ]; then
+		pamixer -m && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$iDIR/volume-mute.png" " Mute"
+	elif [ "$(pamixer --get-mute)" == "true" ]; then
+		pamixer -u && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$(get_icon)" " Volume:" " Switched ON"
+	fi
 }
 
 # Toggle Mic
 toggle_mic() {
-    if [ "$(pamixer --default-source --get-mute)" == "false" ]; then
-        pamixer --default-source -m && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$iDIR/microphone-mute.png" " Microphone:" " Switched OFF"
-    elif [ "$(pamixer --default-source --get-mute)" == "true" ]; then
-        pamixer --default-source -u && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$iDIR/microphone.png" " Microphone:" " Switched ON"
-    fi
+	if [ "$(pamixer --default-source --get-mute)" == "false" ]; then
+		pamixer --default-source -m && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$iDIR/microphone-mute.png" " Microphone:" " Switched OFF"
+	elif [ "$(pamixer --default-source --get-mute)" == "true" ]; then
+		pamixer --default-source -u && notify-send -e -u low -h boolean:SWAYNC_BYPASS_DND:true -i "$iDIR/microphone.png" " Microphone:" " Switched ON"
+	fi
 }
 # Get Mic Icon
 get_mic_icon() {

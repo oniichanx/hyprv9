@@ -3,11 +3,11 @@
 // ### DEFAULT (Laptop)  - Top (old v3) ### //
 {
 "include": [
-  "$HOME/.config/waybar/Modules",
-  "$HOME/.config/waybar/ModulesWorkspaces",
-  "$HOME/.config/waybar/ModulesCustom",
-  "$HOME/.config/waybar/ModulesGroups",
-  "$HOME/.config/waybar/UserModules",
+  "$HOME/.config/hypr/waybar/Modules",
+  "$HOME/.config/hypr/waybar/ModulesWorkspaces",
+  "$HOME/.config/hypr/waybar/ModulesCustom",
+  "$HOME/.config/hypr/waybar/ModulesGroups",
+  "$HOME/.config/hypr/waybar/UserModules",
   ],
 "layer": "top",
 //"mode": "dock",
@@ -37,6 +37,7 @@
 	],
 
 "modules-center": [
+	"hyprland/submap",
 	"group/notify",
 	"custom/cava_mviz",
 	"custom/separator#dot-line",

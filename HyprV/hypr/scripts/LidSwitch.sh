@@ -12,6 +12,7 @@ set -euo pipefail
 ACTION="${1:-check}"
 LOGFILE="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hypr_lid.log"
 STATE_FILE="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hypr_internal_monitor.json"
+SCRIPTSDIR="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts"
 
 log() {
     printf '%s - %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOGFILE" 2>&1 || true
@@ -55,13 +56,8 @@ handle_close() {
     log "Handling lid close for $mon"
     save_monitor_state "$mon"
 
-    # Disable monitor via Lua eval path (Hyprland 0.55+)
-    if hyprctl -r eval "hl.monitor({ output = [[$mon]], disabled = true })" >> "$LOGFILE" 2>&1; then
-        return 0
-    fi
-
-    # Fallback to legacy Hyprlang keyword
-    hyprctl keyword monitor "$mon, disable" >> "$LOGFILE" 2>&1 || true
+    # Disable monitor via Lua eval path
+    hyprctl -r eval "hl.monitor({ output = [[$mon]], disabled = true })" >> "$LOGFILE" 2>&1 || true
 }
 
 handle_open() {
@@ -97,22 +93,16 @@ handle_open() {
 
     # Re-enable monitor with retry loop (display controller handshake on resume)
     for _ in 1 2 3; do
-        # 1. Try Lua eval path (Hyprland 0.55+)
-        local lua_applied=false
+        # 1. Apply via native Lua eval path
         if hyprctl -r eval "hl.monitor({ output = [[$mon]], disabled = false, mode = [[$mode]], position = [[$pos]], scale = [[$scale]] })" >> "$LOGFILE" 2>&1; then
-            lua_applied=true
-        elif hyprctl -r eval "hl.monitor({ output = [[$mon]], disabled = false })" >> "$LOGFILE" 2>&1; then
-            lua_applied=true
+            :
+        else
+            hyprctl -r eval "hl.monitor({ output = [[$mon]], disabled = false })" >> "$LOGFILE" 2>&1 || true
         fi
 
-        # 2. Fallback to legacy keyword
-        if [ "$lua_applied" = false ]; then
-            hyprctl keyword monitor "$mon, $mode, $pos, $scale" >> "$LOGFILE" 2>&1 || \
-            hyprctl keyword monitor "$mon, preferred, auto, 1" >> "$LOGFILE" 2>&1 || true
-        fi
-
-        # 3. Ensure DPMS is powered on
-        hyprctl dispatch dpms on "$mon" >> "$LOGFILE" 2>&1 || true
+        # 2. Ensure DPMS is powered on. The Lua parser rejects the legacy
+        #    `dispatch dpms on` form, so use the hl.dsp dispatcher.
+        hyprctl dispatch hl.dsp.dpms "{ action = \"on\", monitor = \"$mon\" }" >> "$LOGFILE" 2>&1 || true
 
         # Check if active
         if command -v jq >/dev/null 2>&1; then
@@ -123,11 +113,66 @@ handle_open() {
         fi
         sleep 0.2
     done
+
+    # Restore wallpaper on re-enabled internal monitor
+    if [ -x "$SCRIPTSDIR/WallpaperDaemon.sh" ]; then
+        "$SCRIPTSDIR/WallpaperDaemon.sh" >> "$LOGFILE" 2>&1 &
+    fi
+
+    sleep 0.3
+    if pgrep -x waybar >/dev/null 2>&1 || pgrep -x '.waybar-wrapped' >/dev/null 2>&1; then
+        pkill -SIGUSR2 -x waybar >> "$LOGFILE" 2>&1 || true
+    elif [ -x "$SCRIPTSDIR/WaybarStartup.sh" ]; then
+        "$SCRIPTSDIR/WaybarStartup.sh" >> "$LOGFILE" 2>&1 || true
+    fi
+}
+
+handle_refresh() {
+    # A single monitor hotplug or lid toggle fires several events in a row
+    # (monitor.added for each output, lid switch, DPMS). Coalesce them into one
+    # refresh with a non-blocking lock so we never run the work concurrently.
+    local lock_file="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hypr-lid-refresh.lock"
+    exec 9>"$lock_file"
+    if command -v flock >/dev/null 2>&1; then
+        if ! flock -n 9; then
+            exec 9>&-
+            return 0
+        fi
+    fi
+
+    log "Handling post-layout refresh (wallpaper and waybar)"
+
+    # Settle time for Hyprland DRM modesetting and Wayland output registration
+    sleep 0.3
+
+    # Ensure DPMS is turned on for active displays. The Lua parser rejects the
+    # legacy `dispatch dpms on` form, so use the hl.dsp dispatcher.
+    hyprctl dispatch hl.dsp.dpms '{ action = "on" }' >> "$LOGFILE" 2>&1 || true
+
+    # Restore wallpaper on all active displays
+    if [ -x "$SCRIPTSDIR/WallpaperDaemon.sh" ]; then
+        "$SCRIPTSDIR/WallpaperDaemon.sh" >> "$LOGFILE" 2>&1 || true
+    fi
+
+    # Refresh Waybar so its layer surfaces match the updated monitor positions.
+    # We only signal a running bar; a missing bar is (re)started through
+    # WaybarStartup.sh, which serializes on the shared Waybar lock. Never call
+    # Refresh.sh here: its kill+respawn path raced with concurrent monitor
+    # events and produced duplicate bars.
+    if pgrep -x waybar >/dev/null 2>&1 || pgrep -x '.waybar-wrapped' >/dev/null 2>&1; then
+        pkill -SIGUSR2 -x waybar >> "$LOGFILE" 2>&1 || true
+        sleep 0.2
+    elif [ -x "$SCRIPTSDIR/WaybarStartup.sh" ]; then
+        "$SCRIPTSDIR/WaybarStartup.sh" >> "$LOGFILE" 2>&1 || true
+    fi
+
+    exec 9>&-
 }
 
 case "$ACTION" in
-    close) handle_close ;;
-    open)  handle_open ;;
-    check) log "Lid check (no-op)" ;;
-    *)     log "Unknown action: $ACTION"; exit 1 ;;
+    close)   handle_close ;;
+    open)    handle_open ;;
+    refresh) handle_refresh ;;
+    check)   log "Lid check (no-op)" ;;
+    *)       log "Unknown action: $ACTION"; exit 1 ;;
 esac

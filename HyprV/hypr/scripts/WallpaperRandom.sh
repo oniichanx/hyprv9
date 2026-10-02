@@ -40,4 +40,3 @@ fi
 wait $!
 sleep 0.5
 "$SCRIPTSDIR/Refresh.sh"
-

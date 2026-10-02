@@ -64,8 +64,8 @@
 
 "custom/cycle_wall": {
 	"format": " ",
-	"on-click": "$HOME/.config/hypr/scripts/WallpaperSelect.sh",
-	"on-click-right": "$HOME/.config/hypr/scripts/WallpaperRandom.sh",
+	"on-click": "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh",
+	"on-click-right": "$HOME/.config/hypr/UserScripts/WallpaperRandom.sh",
 	"on-click-middle": "$HOME/.config/hypr/scripts/WaybarStyles.sh",
 	"tooltip": true,
 	"tooltip-format": "Left Click: Wallpaper Menu\nMiddle Click: Random wallpaper\nRight Click: Waybar Styles Menu",
@@ -99,7 +99,7 @@
 	"interval": 60,
 	"exec": "$HOME/.config/hypr/scripts/Hypridle.sh status",
 	"on-click": "$HOME/.config/hypr/scripts/Hypridle.sh toggle",
-	"on-click-right": "hyprlock"
+	"on-click-right": "$HOME/.config/hypr/scripts/LockScreen.sh"
 },
 
 "custom/keyboard": {
@@ -122,11 +122,11 @@
 
 "custom/light_dark": {
 	"format": "󰔎 ",
-	"on-click": "$HOME/.config/hypr/scripts/DarkLight.sh",
+	"on-click": "$HOME/.config/hypr/scripts/ThemeChanger.sh",
 	"on-click-right": "$HOME/.config/hypr/scripts/WaybarStyles.sh",
 	"on-click-middle": "$HOME/.config/hypr/scripts/WallpaperSelect.sh",
 	"tooltip": true,
-	"tooltip-format": "Left Click: Switch Dark-Light Themes\nMiddle Click: Wallpaper Menu\nRight Click: Waybar Styles Menu",
+	"tooltip-format": "Left Click: Wallust Theme Selector\nMiddle Click: Wallpaper Menu\nRight Click: Waybar Styles Menu",
 },
 
 // Night light (Hyprsunset)
@@ -151,7 +151,7 @@
 
 "custom/menu": {
 	"format": "  ",
-	"on-click": "rofi_dir=\"$HOME/.config/rofi\"; [ ! -d \"$rofi_dir\" ] && rofi_dir=\"$HOME/.config/rofi\"; pkill rofi || true; $HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show drun -modi run,drun,filebrowser,window -config \"$rofi_dir/config.rasi\"",
+	"on-click": "rofi_dir=\"$HOME/.config/hypr/rofi\"; [ ! -d \"$rofi_dir\" ] && rofi_dir=\"$HOME/.config/rofi\"; pkill rofi || true; $HOME/.config/hypr/scripts/RofiFocusedWallpaperLink.sh >/dev/null 2>&1 || true; rofi -show drun -modi run,drun,filebrowser,window -config \"$rofi_dir/config.rasi\"",
 	"on-click-middle": "$HOME/.config/hypr/scripts/WallpaperSelect.sh",
 	"on-click-right": "$HOME/.config/hypr/scripts/WaybarLayout.sh",
 	"tooltip": true,
