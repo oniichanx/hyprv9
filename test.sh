@@ -389,6 +389,7 @@ if [[ $CFG == "y" ]]; then
     ln -sf ~/.config/HyprV/waybar/ModulesGroups ~/.config/waybar/ModulesGroups 2>/dev/null || true
     ln -sf ~/.config/HyprV/waybar/ModulesWorkspaces ~/.config/waybar/ModulesWorkspaces 2>/dev/null || true
     ln -sf ~/.config/HyprV/waybar/ModulesVertical ~/.config/waybar/ModulesVertical 2>/dev/null || true
+    ln -sf ~/.config/HyprV/waybar/UserModules ~/.config/waybar/UserModules 2>/dev/null || true
 
     # [wallust] ln: waybar/wallust (color template) + ~/.config/wallust (config หลัก) — fix: wallust run ~/Pictures/<img>
     ln -sf ~/.config/HyprV/waybar/wallust ~/.config/waybar/wallust 2>/dev/null || true
