@@ -141,7 +141,7 @@ restart_waybar() {
   # explicit -c/-s flags. Systemd-managed restarts rely on the packaged
   # waybar.service unit, which is overridden separately (see
   # config/systemd/user/waybar.service.d/override.conf) to add the same flags.
-  local waybar_dir="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/waybar"
+  local waybar_dir="${XDG_CONFIG_HOME:-$HOME/.config}/waybar"
 
   if command -v systemctl >/dev/null 2>&1; then
     if systemctl --user --quiet is-active graphical-session.target 2>/dev/null || systemctl --user --quiet is-active wayland-session@*.target 2>/dev/null; then

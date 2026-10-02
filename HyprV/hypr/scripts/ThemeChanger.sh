@@ -149,7 +149,7 @@ fi
 
 ensure_wallust_waybar_style() {
   local waybar_style="${XDG_CONFIG_HOME:-$HOME/.config}/waybar/style.css"
-  local colors_file="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/waybar/wallust/colors-waybar.css"
+  local colors_file="${XDG_CONFIG_HOME:-$HOME/.config}/waybar/wallust/colors-waybar.css"
   local styles_dir="${XDG_CONFIG_HOME:-$HOME/.config}/waybar/style"
   [ -f "$colors_file" ] || return 0
   if [ -f "$waybar_style" ] || [ -L "$waybar_style" ]; then

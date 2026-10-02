@@ -269,7 +269,7 @@ apply_wlogout_background() {
     fi
 
     # 4. Read Wallust accent color from waybar template (prefer KoolDots location)
-    local waybar_wallust="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/waybar/wallust/colors-waybar.css"
+    local waybar_wallust="${XDG_CONFIG_HOME:-$HOME/.config}/waybar/wallust/colors-waybar.css"
     if [[ ! -f "$waybar_wallust" && -f "${XDG_CONFIG_HOME:-$HOME/.config}/waybar/wallust/colors-waybar.css" ]]; then
         waybar_wallust="${XDG_CONFIG_HOME:-$HOME/.config}/waybar/wallust/colors-waybar.css"
     fi
