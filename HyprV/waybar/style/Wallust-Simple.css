@@ -11,7 +11,7 @@
   font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
-@import "../../../.config/hypr/waybar/wallust/colors-waybar.css";
+@import "../../../.config/waybar/wallust/colors-waybar.css";
 
 #waybar.empty,
 #waybar.tiled,
