@@ -15,11 +15,11 @@ notify_msg() {
   fi
 }
 
-# read_lua_default <key> <file>: value of KOOLDOTS_DEFAULTS.<key>, if set
+# read_lua_default <key> <file>: value of ONIICHANX_DEFAULTS.<key>, if set
 read_lua_default() {
   local key="$1" file="$2"
   [[ -f "$file" ]] || return 0
-  sed -nE "s/^[[:space:]]*KOOLDOTS_DEFAULTS\\.${key}[[:space:]]*=[[:space:]]*[\"']([^\"']*)[\"'].*/\\1/p" "$file" | tail -n1
+  sed -nE "s/^[[:space:]]*ONIICHANX_DEFAULTS\\.${key}[[:space:]]*=[[:space:]]*[\"']([^\"']*)[\"'].*/\\1/p" "$file" | tail -n1
 }
 
 # resolve_default <key> <env-fallback>: user override, then system default, then env
@@ -57,7 +57,7 @@ launch_files() {
     return $?
   fi
   if [[ -z "$files" ]]; then
-    notify_msg low "Set KOOLDOTS_DEFAULTS.files in UserConfigs/user_defaults.lua or install a default file manager."
+    notify_msg low "Set ONIICHANX_DEFAULTS.files in UserConfigs/user_defaults.lua or install a default file manager."
     return 1
   fi
   eval "$files &"
@@ -87,6 +87,6 @@ case "${1:-}" in
   echo "--term       : Launch a term window"
   echo "--files      : Launch a file manager"
   echo
-  echo "Defaults come from UserConfigs/user_defaults.lua (KOOLDOTS_DEFAULTS.term / .files)"
+  echo "Defaults come from UserConfigs/user_defaults.lua (ONIICHANX_DEFAULTS.term / .files)"
   ;;
 esac

@@ -328,7 +328,7 @@ if wallust "${wallust_args[@]}" theme -- "${choice}" >"$wallust_log" 2>&1; then
   fi
 
   apply_hypr_border_fallback
-  if [ "${HYPR_FULL_RELOAD_ON_THEME:-0}" = "1" ] || [ "${KOOLDOTS_FULL_RELOAD_ON_WALLPAPER:-0}" = "1" ]; then
+  if [ "${HYPR_FULL_RELOAD_ON_THEME:-0}" = "1" ] || [ "${ONIICHANX_FULL_RELOAD_ON_WALLPAPER:-0}" = "1" ]; then
     reload_hypr_preserve_layout
   fi
   ensure_wallust_waybar_style

@@ -361,7 +361,7 @@ if [ -x "$rainbow_startup" ]; then
   "$rainbow_startup" >/dev/null 2>&1 || true
 fi
 
-if [ "${HYPR_FULL_RELOAD_ON_WALLPAPER:-0}" = "1" ] || [ "${KOOLDOTS_FULL_RELOAD_ON_WALLPAPER:-0}" = "1" ]; then
+if [ "${HYPR_FULL_RELOAD_ON_WALLPAPER:-0}" = "1" ] || [ "${ONIICHANX_FULL_RELOAD_ON_WALLPAPER:-0}" = "1" ]; then
   reload_hypr_preserve_layout
 fi
 

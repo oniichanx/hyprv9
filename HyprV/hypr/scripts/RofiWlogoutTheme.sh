@@ -33,7 +33,7 @@ WLOGOUT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/wlogout"
 THEMES_DIR="${WLOGOUT_DIR}/themes"
 BACKUP_DIR="${THEMES_DIR}/user_backup"
 
-# Locate Rofi config with KoolDots fallback
+# Locate Rofi config with oniichanx fallback
 ROFI_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/config.rasi"
 if [[ ! -f "$ROFI_CONFIG" && -f "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/config.rasi" ]]; then
     ROFI_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/config.rasi"
@@ -180,7 +180,7 @@ apply_theme() {
 
     # Background handling
     if [[ "$theme" == "default" ]]; then
-        # Default KoolDots wlogout uses dynamic Wallust color styling without a static wallpaper background
+        # Default oniichanx wlogout uses dynamic Wallust color styling without a static wallpaper background
         rm -f "${WLOGOUT_DIR}/bg.png" "${WLOGOUT_DIR}/sekiro_blurred.png"
     else
         # Read active blur radius
@@ -202,7 +202,7 @@ apply_theme() {
 
     if [[ "$silent" -ne 1 ]] && command -v notify-send >/dev/null 2>&1; then
         if [[ "$theme" == "default" ]]; then
-            notify-send -u normal -i "preferences-desktop-theme" "Wlogout Theme" "Restored: Default (KoolDots)"
+            notify-send -u normal -i "preferences-desktop-theme" "Wlogout Theme" "Restored: Default (oniichanx)"
         elif [[ "$theme" == "user_backup" ]]; then
             notify-send -u normal -i "document-revert" "Wlogout Theme" "Restored: User Backup Config"
         elif [[ "$theme" == "hadi493" ]]; then
@@ -228,7 +228,7 @@ if pidof rofi >/dev/null; then
 fi
 
 declare -A PRESET_MAP=(
-    ["💫  Default (KoolDots)"]="default"
+    ["💫  Default (oniichanx)"]="default"
     ["⚔️  Sekiro (Sumi-e Crimson)"]="sekiro"
     ["🌸  Silvia (Sakura Pink)"]="silvia"
     ["🍁  Kurenai (Crimson Sakura)"]="kurenai"
@@ -238,7 +238,7 @@ declare -A PRESET_MAP=(
 )
 
 MENU_ITEMS=(
-    "💫  Default (KoolDots)"
+    "💫  Default (oniichanx)"
     "⚔️  Sekiro (Sumi-e Crimson)"
     "🌸  Silvia (Sakura Pink)"
     "🍁  Kurenai (Crimson Sakura)"

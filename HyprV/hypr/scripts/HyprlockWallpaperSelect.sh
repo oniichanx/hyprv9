@@ -28,7 +28,7 @@ find_notify_send() {
     [ -x "$candidate" ] && { printf '%s\n' "$candidate"; return 0; }
   done
   return 1
-}w
+}
 
 NOTIFY_SEND_BIN="$(find_notify_send || true)"
 

@@ -121,8 +121,8 @@ set_user_override() {
   if [[ ! -f "$USER_DEFAULTS_LUA" ]]; then
     cat << 'EOF' > "$USER_DEFAULTS_LUA"
 -- ==================================================
---  KoolDots (2026)
---  Project URL: https://github.com/LinuxBeginnings
+--  oniichanx (2026)
+--  Project URL: https://github.com/oniichanx
 --  License: GNU GPLv3
 --  SPDX-License-Identifier: GPL-3.0-or-later
 -- ==================================================
