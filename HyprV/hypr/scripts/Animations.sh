@@ -8,7 +8,7 @@ iDIR="${XDG_CONFIG_HOME:-$HOME/.config}/swaync/images"
 SCRIPTSDIR="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts"
 animations_dir="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/animations"
 UserConfigs="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/UserConfigs"
-rofi_theme="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/config-Animations.rasi"
+rofi_theme="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/config-Animations.rasi"
 
 animation_ext="lua"
 target_animation_file="$UserConfigs/user_animations.lua"
