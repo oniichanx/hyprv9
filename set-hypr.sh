@@ -17,7 +17,25 @@ else
 fi
 
 mkdir -p Install-Logs
+
+# ================== Script Directory ==================
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 LOG="Install-Logs/install-$(date +%d-%H%M%S).log"
+
+# ================== Y/N Helper ==================
+ask_yn() {
+    local prompt="$1"
+    local answer
+    while true; do
+        read -rep $'\e[1;33m[ACTION]\e[0m - '"${prompt} (y/n): " answer
+        case "$answer" in
+            [Yy]) echo "y"; return ;;
+            [Nn]) echo "n"; return ;;
+            *) echo -e "${WARN} Please enter Y or N only." ;;
+        esac
+    done
+}
 
 # ================== Root Check ==================
 if [[ "$EUID" -eq 0 ]]; then
@@ -65,8 +83,8 @@ if [[ "$ISVM" == true ]]; then
     echo -e "${WARN}  high chance this will fail."
     echo -e "${WARN} ============================================================"
     echo ""
-    read -rep $'[\e[1;33mACTION\e[0m] - Continue anyway? (y/n): ' VMCONTINUE
-    if [[ ! $VMCONTINUE =~ ^[Yy]$ ]]; then
+    VMCONTINUE=$(ask_yn "Continue anyway?")
+    if [[ $VMCONTINUE == "n" ]]; then
         echo -e "${NOTE} Cancelled."
         exit 0
     fi
@@ -87,12 +105,12 @@ fi
 if ! command -v "$AURHELPER" &>/dev/null; then
     echo -e "${NOTE} Installing $AURHELPER..."
     ORIG_DIR="$(pwd)"
-    git clone "https://aur.archlinux.org/${AURHELPER}.git" || {
+    git clone "https://aur.archlinux.org/${AURHELPER}.git" /tmp/${AURHELPER} || {
         echo -e "${ERROR} Failed to clone $AURHELPER from AUR."
         exit 1
     }
-    cd "$AURHELPER" && makepkg -si --noconfirm && cd "$ORIG_DIR"
-    rm -rf "$AURHELPER"
+    cd /tmp/"$AURHELPER" && makepkg -si --noconfirm && cd "$ORIG_DIR"
+    rm -rf /tmp/"$AURHELPER"
 fi
 
 # ================== Progress Bar ==================
@@ -138,9 +156,9 @@ nvidia_stage=(
 )
 
 install_stage=(
-    kitty swaync waybar awww wallust yad bc rofi-wayland
+    kitty swaync waybar awww wallust-git yad bc rofi-wayland
     imagemagick bibata-cursor-theme-bin wlogout
-    swappy grim slurp thunar btop firefox librewolf-bin thunderbird mpv
+    swappy grim slurp thunar btop firefox librewolf thunderbird mpv
     pamixer pavucontrol brightnessctl bluez bluez-utils blueman
     network-manager-applet gvfs thunar-archive-plugin file-roller starship
     papirus-icon-theme ttf-jetbrains-mono ttf-jetbrains-mono-nerd
@@ -205,8 +223,8 @@ BOOTLOADER=$(detect_bootloader)
 echo -e "${INFO} Detected bootloader: $BOOTLOADER" | tee -a "$LOG"
 
 # ================== WiFi powersave ==================
-read -rep $'[\e[1;33mACTION\e[0m] - Disable WiFi powersave? (y/n) ' WIFI
-if [[ $WIFI =~ ^[Yy]$ ]]; then
+WIFI=$(ask_yn "Disable WiFi powersave?")
+if [[ $WIFI == "y" ]]; then
     sudo mkdir -p /etc/NetworkManager/conf.d
     echo -e "[connection]\nwifi.powersave = 2" | sudo tee /etc/NetworkManager/conf.d/wifi-powersave.conf >/dev/null
     sudo systemctl restart NetworkManager
@@ -214,8 +232,8 @@ if [[ $WIFI =~ ^[Yy]$ ]]; then
 fi
 
 # ====================== Install Packages ======================
-read -rep $'[\e[1;33mACTION\e[0m] - Install all packages? (y/n) ' INST
-if [[ $INST =~ ^[Yy]$ ]]; then
+INST=$(ask_yn "Install all packages?")
+if [[ $INST == "y" ]]; then
     echo -e "${NOTE} === Prep Stage ===" | tee -a "$LOG"
     for SOFTWR in "${prep_stage[@]}"; do
         install_software "$SOFTWR"
@@ -307,17 +325,17 @@ if [[ $INST =~ ^[Yy]$ ]]; then
 fi
 
 # ====================== Copy Config Files + Dark Theme ======================
-read -rep $'[\e[1;33mACTION\e[0m] - Copy config files? (y/n) ' CFG
-if [[ $CFG =~ ^[Yy]$ ]]; then
+CFG=$(ask_yn "Copy config files?")
+if [[ $CFG == "y" ]]; then
     echo -e "${NOTE} Copying config files..."
 
     # ตรวจว่า HyprV มีอยู่จริงก่อน ถ้าไม่มีให้หยุดทันที ไม่งั้น symlink ทั้งหมดจะชี้ไปที่ว่าง
-    if [[ ! -d "HyprV" ]]; then
-        echo -e "${ERROR} HyprV folder not found in $(pwd)! Aborting config copy."
+    if [[ ! -d "$SCRIPT_DIR/HyprV" ]]; then
+        echo -e "${ERROR} HyprV folder not found in $SCRIPT_DIR! Aborting config copy."
         exit 1
     fi
 
-    cp -R HyprV ~/.config/
+    cp -R "$SCRIPT_DIR/HyprV" ~/.config/ || { echo -e "${ERROR} Failed to copy HyprV to ~/.config/. Check $LOG"; exit 1; }
 
     for DIR in hypr kitty swaync swaylock waybar wlogout rofi; do
         DIRPATH=~/.config/$DIR
@@ -330,11 +348,16 @@ if [[ $CFG =~ ^[Yy]$ ]]; then
 
     echo -e "${NOTE} Linking config files..."
 
-    # [hyprland] cp (ไม่ใช่ ln) เพราะ hyprland.conf ถูก append nvidia/rog ทีหลัง
-    cp -r ~/.config/HyprV/hypr/* ~/.config/hypr/ 2>/dev/null || true
+    # [hyprland] cp (ไม่ใช่ ln) เพราะ hyprland.lua ถูก append nvidia/rog ทีหลัง
+    cp -a ~/.config/HyprV/hypr/* ~/.config/hypr/ 2>/dev/null || true
+
+    cp -a ~/.config/HyprV/hypr/.luarc.json ~/.config/hypr/.luarc.json 2>/dev/null || true
 
     # [rofi] cp — config.rasi + themes/ + launcher scripts
     cp -r ~/.config/HyprV/rofi/* ~/.config/rofi/ 2>/dev/null || true
+
+    # [starship] cp — starship
+    cp -r ~/.config/HyprV/starship/ ~/.config/hypr/starship 2>/dev/null || true
 
     # [wallpaper] cp ไปไว้ ~/Pictures/ ให้ swww ใช้ตอน startup
     cp -r ~/.config/HyprV/Pictures ~/ 2>/dev/null || true
@@ -350,12 +373,14 @@ if [[ $CFG =~ ^[Yy]$ ]]; then
     ln -sf ~/.config/HyprV/swaync/images ~/.config/swaync 2>/dev/null || true
 
     # [waybar] layout + theme default — เปลี่ยนแค่ชี้ symlink ใหม่ไปที่ configs/ หรือ style/
-    ln -sf ~/.config/HyprV/waybar/configs/[TOP]\ Simple ~/.config/waybar/config 2>/dev/null || true
-    ln -sf ~/.config/HyprV/waybar/style/[Colored]\ Translucent.css ~/.config/waybar/style.css 2>/dev/null || true
+    ln -sf ~/.config/HyprV/waybar/configs/TOP-Simple ~/.config/waybar/config 2>/dev/null || true
+    ln -sf ~/.config/HyprV/waybar/style/Colored-Translucent.css ~/.config/waybar/style.css 2>/dev/null || true
 
     # [wlogout] ln: layout, icons/, style.css — check: ls -la ~/.config/wlogout/
     ln -sf ~/.config/HyprV/wlogout/layout ~/.config/wlogout/layout 2>/dev/null || true
+    ln -sf ~/.config/HyprV/wlogout/.current_theme ~/.config/wlogout/.current_theme 2>/dev/null || true
     ln -sf ~/.config/HyprV/wlogout/icons ~/.config/wlogout/icons 2>/dev/null || true
+    ln -sf ~/.config/HyprV/wlogout/themes ~/.config/wlogout/themes 2>/dev/null || true
     ln -sf ~/.config/HyprV/wlogout/style.css ~/.config/wlogout/style.css 2>/dev/null || true
 
     # [waybar modules] ln: Modules, Custom, Groups, Workspaces, Vertical — reload: killall waybar && waybar &
@@ -364,6 +389,7 @@ if [[ $CFG =~ ^[Yy]$ ]]; then
     ln -sf ~/.config/HyprV/waybar/ModulesGroups ~/.config/waybar/ModulesGroups 2>/dev/null || true
     ln -sf ~/.config/HyprV/waybar/ModulesWorkspaces ~/.config/waybar/ModulesWorkspaces 2>/dev/null || true
     ln -sf ~/.config/HyprV/waybar/ModulesVertical ~/.config/waybar/ModulesVertical 2>/dev/null || true
+    ln -sf ~/.config/HyprV/waybar/UserModules ~/.config/waybar/UserModules 2>/dev/null || true
 
     # [wallust] ln: waybar/wallust (color template) + ~/.config/wallust (config หลัก) — fix: wallust run ~/Pictures/<img>
     ln -sf ~/.config/HyprV/waybar/wallust ~/.config/waybar/wallust 2>/dev/null || true
@@ -373,17 +399,20 @@ if [[ $CFG =~ ^[Yy]$ ]]; then
     ln -sf ~/.config/HyprV/waybar/style ~/.config/waybar/style 2>/dev/null || true
 
     if [[ "$ISNVIDIA" == true ]]; then
-        if ! grep -q "env_var_nvidia.conf" ~/.config/hypr/hyprland.conf 2>/dev/null; then
-            echo -e "\nsource = ~/.config/hypr/env_var_nvidia.conf" >> ~/.config/hypr/hyprland.conf
+        # เพิ่มใน hyprland.lua
+        if [[ -f ~/.config/hypr/hyprland.lua ]]; then
+            if ! grep -qF "env_nvidia.lua" ~/.config/hypr/hyprland.lua; then
+                printf '\nload_module("env_nvidia")\n' >> ~/.config/hypr/hyprland.lua
+            fi
         fi
     fi
 
     echo -e "${NOTE} Setting up Dark Theme and SDDM..."
-    sudo cp -R Extras/sdt /usr/share/sddm/themes/ 2>/dev/null || true
+    sudo cp -R "$SCRIPT_DIR/Extras/sdt" /usr/share/sddm/themes/ 2>/dev/null || true
     sudo chown -R "$USER:$USER" /usr/share/sddm/themes/sdt 2>/dev/null || true
     sudo mkdir -p /etc/sddm.conf.d
     echo -e "[Theme]\nCurrent=sdt" | sudo tee /etc/sddm.conf.d/10-theme.conf >/dev/null
-    sudo cp Extras/hyprland.desktop /usr/share/wayland-sessions/ 2>/dev/null || true
+    sudo cp "$SCRIPT_DIR/Extras/hyprland.desktop" /usr/share/wayland-sessions/ 2>/dev/null || true
 
     cp -f ~/.config/HyprV/backgrounds/v4-background-dark.jpg /usr/share/sddm/themes/sdt/wallpaper.jpg 2>/dev/null || true
 
@@ -396,18 +425,12 @@ if [[ $CFG =~ ^[Yy]$ ]]; then
 fi
 
 # ================== Starship ==================
-read -rep $'[\e[1;33mACTION\e[0m] - Enable Starship shell? (y/n) ' STAR
-if [[ $STAR =~ ^[Yy]$ ]]; then
+STAR=$(ask_yn "Enable Starship shell?")
+if [[ $STAR == "y" ]]; then
     if ! grep -q 'starship init bash' ~/.bashrc 2>/dev/null; then
         echo 'eval "$(starship init bash)"' >> ~/.bashrc
     fi
-    cp Extras/starship.toml ~/.config/ 2>/dev/null || true
-fi
-
-# ================== Wallpaper ==================
-read -rep $'[\e[1;33mACTION\e[0m] - Enable wallpaper on startup? (y/n) ' SET_WALLPAPER
-if [[ $SET_WALLPAPER =~ ^[Yy]$ ]]; then
-    sed -i 's|#exec-once = ~/.config/hypr/startup.sh|exec-once = ~/.config/hypr/startup.sh|' ~/.config/hypr/hyprland.conf 2>/dev/null || true
+    cp "$SCRIPT_DIR/Extras/starship.toml" ~/.config/ 2>/dev/null || true
 fi
 
 # ================== Default Browser ==================
@@ -417,7 +440,7 @@ if command -v xdg-settings &>/dev/null; then
     case $BROWSER_CHOICE in
         1) xdg-settings set default-web-browser librewolf.desktop ;;
         2) xdg-settings set default-web-browser firefox.desktop ;;
-        3) xdg-settings set default-web-browser brave.desktop ;;
+        3) xdg-settings set default-web-browser brave-browser.desktop ;;
         *) xdg-settings set default-web-browser firefox.desktop ;;
     esac
 else
@@ -425,25 +448,64 @@ else
 fi
 
 # ================== ASUS ROG ==================
-read -rep $'[\e[1;33mACTION\e[0m] - Install ASUS ROG support? (y/n) ' ROG
-if [[ $ROG =~ ^[Yy]$ ]]; then
+ROG=$(ask_yn "Install ASUS ROG support?")
+if [[ $ROG == "y" ]]; then
     echo -e "${NOTE} Setting up ASUS ROG support..." | tee -a "$LOG"
-    sudo pacman-key --recv-keys 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35 &>>"$LOG"
-    sudo pacman-key --lsign-key 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35 &>>"$LOG"
 
-    if ! grep -q "\[g14\]" /etc/pacman.conf; then
-        echo -e "\n[g14]\nServer = https://arch.asus-linux.org" | sudo tee -a /etc/pacman.conf &>>"$LOG"
+    rog=(
+        power-profiles-daemon
+        asusctl
+        supergfxctl
+        rog-control-center
+    )
+
+    ASUS_KEY="8F654886F17D497FEFE3DB448B15A6B0E9A3FA35"
+
+    echo -e "${NOTE} Configuring ASUS Linux repository..." | tee -a "$LOG"
+
+    sudo pacman-key --recv-keys "$ASUS_KEY" >> "$LOG" 2>&1 || {
+        echo -e "${ERROR} Failed to receive ASUS Linux signing key. Check $LOG"
+        exit 1
+    }
+
+    sudo pacman-key --lsign-key "$ASUS_KEY" >> "$LOG" 2>&1 || {
+        echo -e "${ERROR} Failed to locally sign ASUS Linux signing key. Check $LOG"
+        exit 1
+    }
+
+    if ! grep -q "^\[g14\]" /etc/pacman.conf; then
+        echo -e "\n[g14]\nServer = https://arch.asus-linux.org" | \
+            sudo tee -a /etc/pacman.conf >/dev/null
+
+        echo -e "${OK} ASUS Linux repository added."
+    else
+        echo -e "${INFO} ASUS Linux repository already configured."
     fi
 
-    sudo pacman -Suy --noconfirm &>>"$LOG"
-    install_software asusctl
-    install_software supergfxctl
-    install_software rog-control-center
-    sudo systemctl enable --now power-profiles-daemon.service supergfxd
+    echo -e "${NOTE} Synchronizing package databases..." | tee -a "$LOG"
 
-    if ! grep -q "rog-g15-strix-2021-binds.conf" ~/.config/hypr/hyprland.conf 2>/dev/null; then
-        echo -e "\nsource = ~/.config/hypr/rog-g15-strix-2021-binds.conf" >> ~/.config/hypr/hyprland.conf
-    fi
+    sudo pacman -Syu --noconfirm >> "$LOG" 2>&1 || {
+        echo -e "${ERROR} Failed to synchronize packages. Check $LOG"
+        exit 1
+    }
+
+    echo -e "${NOTE} Installing ASUS ROG packages..." | tee -a "$LOG"
+
+    for ASUS in "${rog[@]}"; do
+        install_software "$ASUS"
+    done
+
+    echo -e "${NOTE} Activating ROG services..." | tee -a "$LOG"
+
+    sudo systemctl enable supergfxd >> "$LOG" 2>&1 || {
+        echo -e "${WARN} Failed to enable supergfxd. Check $LOG"
+    }
+
+    sudo systemctl enable power-profiles-daemon >> "$LOG" 2>&1 || {
+        echo -e "${WARN} Failed to enable power-profiles-daemon. Check $LOG"
+    }
+
+    echo -e "${OK} ASUS ROG support setup completed."
 fi
 
 # ================== hyprpolkitagent ==================
@@ -454,6 +516,8 @@ if ! systemctl --user status &>/dev/null; then
     echo -e "${WARN} systemd user session not available. $SERVICE will be enabled on next login." | tee -a "$LOG"
     systemctl --user enable "$SERVICE" >> "$LOG" 2>&1 || true
 elif systemctl --user list-unit-files 2>/dev/null | grep -q "^${SERVICE}\.service"; then
+
+    systemctl --user daemon-reload >> "$LOG" 2>&1 || true
 
     echo -e "${NOTE} Stopping other polkit agents to prevent conflict..." | tee -a "$LOG"
     pkill -u "$UID" -f 'polkit-gnome-authentication-agent-1|xfce-polkit|polkit-kde-authentication-agent-1' 2>/dev/null || true
@@ -499,7 +563,7 @@ else
     echo -e "${WARN} Installation finished but $HYPR_PACKAGE may not be installed correctly. Check $LOG"
 fi
 
-read -rep $'[\e[1;33mACTION\e[0m] - Reboot now? (y/n) ' REBOOT
-if [[ $REBOOT =~ ^[Yy]$ ]]; then
+REBOOT=$(ask_yn "Reboot now?")
+if [[ $REBOOT == "y" ]]; then
     sudo reboot
 fi
