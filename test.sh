@@ -373,8 +373,8 @@ if [[ $CFG == "y" ]]; then
     ln -sf ~/.config/HyprV/swaync/images ~/.config/swaync 2>/dev/null || true
 
     # [waybar] layout + theme default — เปลี่ยนแค่ชี้ symlink ใหม่ไปที่ configs/ หรือ style/
-    ln -sf ~/.config/HyprV/waybar/configs/[TOP]\ Simple ~/.config/waybar/config 2>/dev/null || true
-    ln -sf ~/.config/HyprV/waybar/style/[Colored]\ Translucent.css ~/.config/waybar/style.css 2>/dev/null || true
+    ln -sf ~/.config/HyprV/waybar/configs/TOP-Simple ~/.config/waybar/config 2>/dev/null || true
+    ln -sf ~/.config/HyprV/waybar/style/Colored-Translucent.css ~/.config/waybar/style.css 2>/dev/null || true
 
     # [wlogout] ln: layout, icons/, style.css — check: ls -la ~/.config/wlogout/
     ln -sf ~/.config/HyprV/wlogout/layout ~/.config/wlogout/layout 2>/dev/null || true
