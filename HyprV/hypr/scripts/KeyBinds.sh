@@ -13,10 +13,6 @@ fi
 # define the config files
 config_home="${XDG_CONFIG_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}}"
 hypr_dir="$config_home/hypr"
-keybinds_conf="$hypr_dir/UserConfigs/KeyBinds.conf"
-system_laptop_conf="$hypr_dir/configs/Laptops.conf"
-user_keybinds_conf="$hypr_dir/UserConfigs/UserKeybinds.conf"
-laptop_conf="$hypr_dir/UserConfigs/Laptops.conf"
 lua_keybinds_conf="$hypr_dir/lua/keybinds.lua"
 lua_user_keybinds="$hypr_dir/UserConfigs/user_keybinds.lua"
 lua_system_keybinds="$hypr_dir/configs/system_keybinds.lua"

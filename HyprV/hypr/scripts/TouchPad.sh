@@ -1,8 +1,8 @@
 #!/bin/bash
 # /* ---- 💫 https://github.com/oniichanx 💫 ---- */  ##
 # For disabling touchpad.
-# Edit the Touchpad_Device on ~/.config/hypr/UserConfigs/Laptops.conf according to your system
-# use hyprctl devices to get your system touchpad device name
+# Toggle the detected or configured touchpad device.
+# Set TOUCHPAD_DEVICE or define Touchpad_Device in UserConfigs/user_laptops.lua to override auto-detection.
 # source https://github.com/hyprwm/Hyprland/discussions/4283?sort=new#discussioncomment-8648109
 
 set -euo pipefail
