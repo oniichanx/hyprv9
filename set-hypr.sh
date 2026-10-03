@@ -156,7 +156,7 @@ nvidia_stage=(
 )
 
 install_stage=(
-    kitty swaync waybar awww wallust-git yad bc rofi-wayland
+    kitty swaync waybar waybar-weather awww wallust-git yad bc rofi-wayland
     imagemagick bibata-cursor-theme-bin wlogout
     swappy grim slurp thunar btop firefox librewolf thunderbird mpv
     pamixer pavucontrol brightnessctl bluez bluez-utils blueman
