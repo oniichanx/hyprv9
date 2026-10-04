@@ -13,7 +13,7 @@ ONIICHANX_DEFAULTS.edit = editor
 ONIICHANX_DEFAULTS.visual = visual
 ONIICHANX_DEFAULTS.term = "kitty"
 ONIICHANX_DEFAULTS.files = "thunar"
-ONIICHANX_DEFAULTS.search_engine = "https://www.google.com/search?q={}"
+ONIICHANX_DEFAULTS.search_engine = "https://search.brave.com/search?q={}"
 
 -- Optional user overrides live outside the pristine lua/ source tree.
 do

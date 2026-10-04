@@ -3,7 +3,7 @@
 # Rofi Emoticons. Not my own. Cant remember the source
 
 # Variables
-rofi_theme="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/config-emoji.rasi"
+rofi_theme="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/config-emoji.rasi"
 msg='** note ** 👀 Click or Return to choose || Ctrl V to Paste'
 usage_file="${XDG_STATE_HOME:-$HOME/.local/state}/rofi-emoji/usage"
 
