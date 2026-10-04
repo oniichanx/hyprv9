@@ -81,27 +81,27 @@ apply_window_rule({
 })
 
 apply_window_rule({
-  name = "tag-kool-cheat-sheet",
+  name = "tag-oniichanx-cheat-sheet",
   match = {
-    title = "^(KooL Quick Cheat Sheet)$",
+    title = "^(ONIICHANX Quick Cheat Sheet)$",
   },
-  tag = "+KooL_Cheat",
+  tag = "+ONIICHANX_Cheat",
 })
 
 apply_window_rule({
-  name = "tag-kool-hyprland-settings",
+  name = "tag-oniichanx-hyprland-settings",
   match = {
-    title = "^(KooL Hyprland Settings)$",
+    title = "^(ONIICHANX Hyprland Settings)$",
   },
-  tag = "+KooL_Settings",
+  tag = "+ONIICHANX_Settings",
 })
 
 apply_window_rule({
-  name = "tag-kool-settings-nwg-tools",
+  name = "tag-oniichanx-settings-nwg-tools",
   match = {
     class = "^(nwg-displays|nwg-look)$",
   },
-  tag = "+KooL-Settings",
+  tag = "+ONIICHANX-Settings",
 })
 
 apply_window_rule({
@@ -907,9 +907,9 @@ apply_window_rule({
 })
 
 apply_window_rule({
-  name = "KooL Cheat (tag)",
+  name = "ONIICHANX Cheat (tag)",
   match = {
-    tag = "KooL_Cheat",
+    tag = "ONIICHANX_Cheat",
   },
   float = true,
   center = true,
@@ -949,9 +949,9 @@ apply_window_rule({
 })
 
 apply_window_rule({
-  name = "KooL Settings (tag)",
+  name = "ONIICHANX Settings (tag)",
   match = {
-    tag = "KooL-Settings",
+    tag = "ONIICHANX-Settings",
   },
   float = true,
   center = true,
