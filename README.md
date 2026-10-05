@@ -1,15 +1,21 @@
 # HyprV6, The script that makes so that you make your life easier.
+
 ## Welcome to HyprV6!
+
 ### Purpose:
 
 This script was created for easily install Hyprland, making your life more easy.
+
 ### Status:
 
 This script is in **BETA**, Proceed with caution.
+
 ### Notes:
+
 IMPORTANT - You need to install this on a fresh install of Arch.
 
 ### Installation:
+
 Clone the project, go to the root of the project and run this command:
 
 ```
@@ -19,11 +25,13 @@ Clone the project, go to the root of the project and run this command:
 And you're ready to go!
 
 ### Manual Installation
+
 If you want to do manual installation, here it is.
 
 NOTES: You need to install yay! I don't know if this project will have an option where you can choose yay or paru, yay will be the default now.
 
 #### NVIDIA: Do this if you have a nvidia card.
+
 Run this command:
 
 ```
@@ -61,6 +69,7 @@ options nvidia-drm modeset=1
 Now reboot your system!
 
 #### General:
+
 Run this command:
 
 ```
@@ -69,46 +78,60 @@ wofi wlogout xdg-desktop-portal-hyprland swappy grim slurp thunar \
 polkit-gnome python-requests pamixer pavucontrol brightnessctl bluez \
 bluez-utils blueman network-manager-applet gvfs thunar-archive-plugin \
 file-roller btop pacman-contrib starship ttf-jetbrains-mono-nerd \
-noto-fonts-emoji lxappearance xfce4-settings sddm-git sddm-sugar-candy-git 
+noto-fonts-emoji lxappearance xfce4-settings sddm-git sddm-sugar-candy-git
 ```
 
-Or you can use the attached script | "set-hypr" | to install everything for you.
----
+## Or you can use the attached script | "set-hypr" | to install everything for you.
+
 - #### | set-hypr | for hyprland aur version it slow for get new update but perfect to using daily
 - #### For people using systemd-boot you can do this adding `nvidia_drm.modeset=1` to the end of `/boot/loader/entries/arch.conf`.
 - #### For people update to hyprland-0.29.1 just add this line `WLR_RENDERER_ALLOW_SOFTWARE=1` to `/etc/environment`
 - #### For people update to hyprland-0.54.2 and get error with start-hyprland you just need to change SDDM Exec
 - ##### `/usr/share/xsessions` or `/usr/share/wayland-sessions` in `hyprland.desktop` on `Exec=Hyprland` to `Exec=start-hyprland` or `Exec=/usr/bin/start-hyprland`
+
 ---
 
 <details>
   <summary><strong> How to use attached script? </strong></summary>
 
 ---
+
 - Step 1
+
 ```
   git clone https://github.com/oniichanx/hyprv6.git
 ```
+
 - Step 2
+
 ```
   cd hyprv6
 ```
+
 - Step 3
+
 ```
   chmod +x set-hypr
 ```
+
 ```
   chmod +x set-hypr-git
 ```
+
 - Step 4 run which one you wanna use `hypr or hypr-git`
+
 ```
   ./set-hypr
 ```
+
 ```
   ./set-hypr-git
 ```
+
 - DONE
+
 ---
+
 </details>
 </details>
 
@@ -116,18 +139,25 @@ Or you can use the attached script | "set-hypr" | to install everything for you.
   <summary><strong> After Done  Install optional packages? </strong></summary>
 
 ---
+
 - #### Any Nerd Fonts installed and used by your terminal emulator to display icon (Highly Recommended: JetBrains Mono, since most of the config using this font)
 
 - You can use lime-desu script to download any Nerd Fonts (requires [fzf](https://github.com/junegunn/fzf)&[wget](https://archlinux.org/packages/extra/x86_64/wget))
+
 ```
 sudo pacman -S fzf wget
 ```
+
 - run this next when fzf & wget install done
+
 ```
 bash -c "$(curl -Ls https://raw.githubusercontent.com/lime-desu/bin/main/nf-dl)"
 ```
+
 ---
+
 - #### install all font manual
+
 ```
 pacman -S ttf-dejavu ttf-liberation ttf-droid ttf-ubuntu-font-family noto-fonts noto-fonts-cjk ttf-font-awesome woff2-font-awesome
 
@@ -135,53 +165,80 @@ yay -S ttf-gelasio-ib ttf-caladea ttf-carlito ttf-liberation-sans-narrow ttf-ms-
 
 yay -S ttf-fantasque-nerd ttf-victor-mono ttf-gelasio ttf-maplemono ttf-maplemono-nf-unhinted ttf-maplemono-nf-cn-unhinted
 ```
+
 ---
+
 - #### install apple fonts manual
+
 ```
 git clone https://aur.archlinux.org/apple-fonts.git
 cd apple-fonts
 makepkg -si
 ```
+
 ---
+
 - #### install obs-studio & font-manager
+
 ```
 pacman -S obs-studio
 yay -S font-manager
 ```
+
 ---
+
 - #### install webcord it just discord but can sharing srceen on wayland&hyprland
+
 ```
 git clone https://aur.archlinux.org/webcord.git
 cd webcord
 makepkg -si
 ```
+
 ---
+
 - #### install AppImageLauncher for just use appimage
+
 ```
 yay -S AppImageLauncher
 ```
+
 ---
+
 - #### install imagemagick for custom neofetch with image like .png|.jpg|.gif (requires [neofetch config](https://github.com/oniichanx/neofetch))
+
 ```
 sudo pacman -S imagemagick
 ```
+
 ---
+
 - #### set default-web-browser to librewolf
+
 ```
 xdg-settings set default-web-browser librewolf.desktop
 ```
+
 ---
+
 - #### How to disable yay -debug
+
 ```
 nano /etc/makepkg.conf
 ```
+
 - and just put `!` in font debug to look like this `!debug`
+
 ---
+
 - #### How to config muitdisplay easy way (requires [nwg-displays](https://github.com/nwg-piotr/nwg-displays))
+
 ```
 yay -S nwg-displays
 ```
+
 ---
+
   </details>
 </details>
 
@@ -189,19 +246,27 @@ yay -S nwg-displays
   <summary><strong> How to make archlinux secure boot? (SYSTEMD-BOOT Only | GRUB not working)</strong></summary>
 
 ---
+
 - Step 1
+
 ```
 sudo pacman -S sbctl
 ```
+
 - Step 2
+
 ```
 sudo sbctl create-keys
 ```
+
 - Step 3
+
 ```
 sudo sbctl enroll-keys -m
 ```
+
 - Step 4
+
 ```
 sudo sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFi
 sudo sbctl sign -s /boot/EFI/systemd/systemd-bootx64.efi
@@ -209,13 +274,17 @@ sudo sbctl sign -s /boot/vmlinuz-linux
 sudo sbctl sign -s /boot/vmlinuz-linux-zen
 sudo sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
 ```
+
 - Step 5
+
 ```
 sudo sbctl verify
 ```
+
 - Done
 
 ---
+
   </details>
 </details>
 
@@ -250,6 +319,7 @@ sudo grub-mkconfig -o /efi/grub/grub.cfg
 - Done
 
 ---
+
   </details>
 </details>
 
@@ -293,6 +363,7 @@ console-mode 0
 - Done
 
 ---
+
   </details>
 </details>
 
@@ -322,9 +393,11 @@ console-mode 0
 ```
 nano /etc/kernel/cmdline
 ```
+
 ```
 quiet fsck.mode=skip loglevel=3 systemd.show_status=auto rd.udev.log_level=3
 ```
+
 ```
 sudo mkinitcpio -P
 ```
@@ -342,9 +415,11 @@ sudo mkinitcpio -P
 ```
 nano /boot/loader/entries/(whateverfilename.conf)
 ```
+
 ```
 quiet fsck.mode=skip loglevel=3 systemd.show_status=auto rd.udev.log_level=3 amd_iommu=on iommu=pt nvidia-drm.modeset=1 nvidia-drm.fbdev=1
 ```
+
 ```
 sudo mkinitcpio -P
 ```
@@ -356,34 +431,49 @@ sudo mkinitcpio -P
   <summary><strong> How to make hyprland gaming? </strong></summary>
 
 ---
+
 - #### Install steam
+
 ```
 sudo pacman -S steam
 ```
+
 ---
+
 - #### Install wine & lutris
+
 ```
 sudo pacman -S --needed --noconfirm lutris wine-staging wine-mono
 ```
+
 ---
+
 - #### Install lutris requires missed (NVIDIA)
+
 ```
 sudo pacman -S --needed nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings vulkan-icd-loader lib32-vulkan-icd-loader
 ```
+
 ---
+
 - #### if you want play minecraft
+
 ```
 sudo pacman -S --needed --noconfirm cava vscodium-bin prismlauncher-qt5-bin
 ```
+
 - #### if you using nvidia-driver 545.xxx Need to downgrade to 535.113 (Flickering fix)
-- ``` yay -S downgrade ```
-- ``` sudo downgrade nvidia-dkms nvidia nvidia-utils lib32-nvidia-utils ```
+- `yay -S downgrade`
+- `sudo downgrade nvidia-dkms nvidia nvidia-utils lib32-nvidia-utils`
 - #### if you using nvidia-driver 545.xxx Need to downgrade to 535.113 (another way for easy)
-- ``` git clone https://github.com/Frogging-Family/nvidia-all.git ```
-- ``` cd nvidia-all ```
-- ``` makepkg -si ```
+- `git clone https://github.com/Frogging-Family/nvidia-all.git`
+- `cd nvidia-all`
+- `makepkg -si`
+
 ---
+
 - #### if you want play game on windows (requires [StartWine](https://github.com/RusNor/StartWine-Launcher))
+
 ```
 curl -sLo /dev/null -w '%{url_effective}' https://github.com/RusNor/StartWine-Launcher/releases/latest
 copy output link
@@ -391,37 +481,52 @@ wget https://github.com/RusNor/StartWine-Launcher/releases/tag/StartWine_v***
 chmod +x StartWine_v*
 ./StartWine_v37*
 ```
+
 or Aur
+
 ```
 yay -S --needed --noconfirm startwine
 ```
+
 ---
+
 - #### if you want change wallpaper quick (requires [Waypaper](https://github.com/anufrievroman/waypaper))
+
 ```
 sudo pacman -S --needed --noconfirm python-pip python-pipx swaybg
 ```
+
 ```
 pip install waypaper
 ```
+
 ```
 pipx install waypaper
 ```
+
 Or use yay packages
+
 ```
 yay -S waypaper-git
 ```
+
 Add this line in your hyprland.conf
+
 ```
 exec-once=waypaper --restore
 ```
+
 Reboot
 `waypaper` will run GUI application.
 
 ---
+
 - #### if you want macos theme
+
 ```
 yay -S mojave-gtk-theme-git apple_cursor
 ```
+
 ---
 
   </details>
@@ -431,7 +536,9 @@ yay -S mojave-gtk-theme-git apple_cursor
   <summary><strong> You do wanna firewall? </strong></summary>
 
 ---
+
 - #### Install Gufw & xorg-xhost
+
 ```
 sudo pacman -S gufw xorg-xhost
 ```
@@ -439,6 +546,7 @@ sudo pacman -S gufw xorg-xhost
 - ### ([gufw issues fix](https://forum.endeavouros.com/t/gufw-problems-and-solution/10666))
 
 `sudo nano /usr/bin/gufw`
+
 ```
 #!/bin/bash
 Main() {
@@ -453,6 +561,7 @@ Main "$@"
 ```
 
 `sudo nano /usr/bin/gufw-pkexec`
+
 ```
 #!/bin/bash
 LOCATIONS=`ls -ld /usr/lib/python*/site-packages/gufw/gufw.py | awk '{print $NF}'` # from source
@@ -469,8 +578,9 @@ done
 ---
 
 - ### ([gufw returns a segmentation fault in line 13 fix](https://unix.stackexchange.com/questions/396806/gufw-returns-a-segmentation-fault-in-line-13))
-  
+
 `sudo nano /usr/sbin/gufw`
+
 ```
 #!/bin/bash
 if [ $(loginctl show-session $(loginctl|grep $(whoami)|sort -n|tail -n 1 |awk '{print $1}') -p Type) = "Type=wayland" ]; then
@@ -483,6 +593,7 @@ pkexec gufw-pkexec $c_user
 ---
 
 `To block IPV6 By Default`
+
 ```
 sudo nano /etc/default/ufw
 
@@ -492,6 +603,7 @@ first one IPV6=yes to IPV6=no
 ```
 
 `My recommended Rules`
+
 ```
 sudo ufw limit SSH
 sudo ufw limit 22/tcp
@@ -501,7 +613,9 @@ sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw enable
 ```
+
 ---
+
 `if you can't you lanucher gufw but Segmentation fault (core dumped) or someting right this`
 
 Type the following command in a terminal:
@@ -509,6 +623,7 @@ Type the following command in a terminal:
 ```
 echo $XDG_SESSION_TYPE
 ```
+
 If it returns Wayland, type:
 
 ```
@@ -526,6 +641,7 @@ you can Verify Default Settings by this command
 ```
 xhost
 ```
+
 ---
 
 If that doesn't work, try this line. This line doesn't need to be changed: `/usr/bin/gufw-pkexec`
@@ -559,12 +675,12 @@ Main "$@"
 
 ```
 
-This line only working with terminal or kitty 
+This line only working with terminal or kitty
 
 ---
 
 - ### ([gufw not launching - add an "s" to the policy](https://unix.stackexchange.com/questions/396806/gufw-returns-a-segmentation-fault-in-line-13))
-  
+
 `sudo nano /usr/share/polkit-1/actions/com.ubuntu.pkexec.gufw.policy`
 
 change this line
@@ -583,13 +699,14 @@ to this one
 
 - ### if you have problem internet on qemu you can fix with this
 
-- change this line in 
+- change this line in
 
 ```
 /etc/libvirt/network.conf
 ```
 
 - add this sure look like this
+
 ```
 firewall_backend = "iptables"
 ```
@@ -630,10 +747,12 @@ sudo nano /usr/share/sddm/scripts/Xsetup
 ```
 
 - Find input monitor with `xrandr | grep -w connected` but sometime is not correct
+
 ```
 xrandr --output DP-5 --off
 xrandr --output DP-3 --off
 ```
+
 ---
 
 </details>
@@ -642,19 +761,27 @@ xrandr --output DP-3 --off
   <summary><strong> How to reroute permanently a microphone to make it mono? on PIPEWIRE </strong></summary>
 
 ---
-- This is find alse input or audio interface name  
+
+- This is find alse input or audio interface name
+
 ```
 pw-dump | grep alsa_input
 ```
+
 - Make folder for configs we need to create file
+
 ```
 mkdir -p ~/.config/pipewire/pipewire.conf.d/
 ```
+
 - Create file config we need to do whatever name your want
+
 ```
 nano ~/.config/pipewire/pipewire.conf.d/mono-umc22.conf
 ```
+
 - This config need to replace the name of your card in `node.target` by the one that you get when you run `pw-dump | grep alsa_input`
+
 ```
 context.modules = [
     # plenty of existing { ... } blocks, then paste this:
@@ -678,10 +805,13 @@ context.modules = [
     }
 ]
 ```
+
 - Restart pipewire when restart is done your sure see name `node.description` your set is on `pavucontrol`
+
 ```
 systemctl --user restart pipewire wireplumber
 ```
+
 ---
 
 </details>
@@ -690,19 +820,25 @@ systemctl --user restart pipewire wireplumber
   <summary><strong> How to use ntsync </strong></summary>
 
 ---
+
 To use NTsync, you need Proton GE and Kernel 6.14 or newer. Then create a file called in
+
 ```
 sudo nano /etc/modules-load.d/ntsync.conf
 ```
+
 And add inside it
+
 ```
 ntsync
 ```
+
 Restart your distro, and NTsync should work
 
 ---
 
-You can also just if you want to load it immediately (this doesn't persist on reboot) 
+You can also just if you want to load it immediately (this doesn't persist on reboot)
+
 ```
 sudo modprobe ntsync
 ```
@@ -720,30 +856,76 @@ PROTON_USE_NTSYNC=1 %command%
 </details>
 
 <details>
+  <summary><strong> If You want to install Appimage or DLSS4 use this </strong></summary>
+
+---
+
+- DEPENDENCIES
+
+For Appimage
+
+```
+paru -S gearlever
+```
+
+Or
+
+```
+yay -S gearlever
+```
+
+For Dlss4
+
+```
+paru -S goverlay
+```
+
+Or
+
+```
+yay -S goverlay
+```
+
+- Done
+
+---
+
+</details>
+
+<details>
   <summary><strong> If You don't likes SDDM You can use it </strong></summary>
 
 ---
+
 This project https://github.com/Darkkal44/qylock is crazy. or https://github.com/Timeking23/sddm-ddr-theme
 
 - DEPENDENCIES
+
 ```
 yay -S qt6-5compat qt6-multimedia qt6-multimedia-ffmpeg
 ```
+
 ```
 git clone https://github.com/Darkkal44/qylock.git
 ```
+
 ```
 cd qylock/themes/
 ```
+
 - copy sddm theme to /usr/share/sddm/themes/
+
 ```
 mv whateveryoulike/ /usr/share/sddm/themes/
 ```
+
 - to change the theme you need to config manual in `/etc/sddm.conf.d/10-theme.conf`
-change `Current=sdt` to same a name of folder you copy sddm theme
+  change `Current=sdt` to same a name of folder you copy sddm theme
+
 ```
 sudo nano /etc/sddm.conf.d/10-theme.conf
 ```
+
 - Done
 
 ---
@@ -754,18 +936,23 @@ sudo nano /etc/sddm.conf.d/10-theme.conf
   <summary><strong> If You have issue with change lang on firefox it show menu bar do this </strong></summary>
 
 ---
+
 This issue https://www.reddit.com/r/swaywm/comments/uyfk7i/remove_alt_keyboard_bindings_on_firefox/
 
 - DEPENDENCIES
 
 Go to about:config using the URL bar.
+
 ```
 about:config
 ```
+
 Once there search for this: `ui.key.menuAccessKeyFocuses` and toggle it to `FALSE`. Problem solved.
+
 ```
 ui.key.menuAccessKeyFocuses
 ```
+
 - Done
 
 ---
@@ -776,15 +963,19 @@ ui.key.menuAccessKeyFocuses
   <summary><strong> If You USB-Headphone: no sound below 25% volume level </strong></summary>
 
 ---
+
 This issue https://gitlab.freedesktop.org/pipewire/pipewire/-/work_items/1117
 
 - DEPENDENCIES
+
 ```
 mkdir -p ~/.config/wireplumber/wireplumber.conf.d
 ```
+
 ```
 nano ~/.config/wireplumber/wireplumber.conf.d/alsa-ignore-dB.conf
 ```
+
 ```
 monitor.alsa.rules = [
   {
@@ -801,6 +992,7 @@ monitor.alsa.rules = [
   }
 ]
 ```
+
 - Done
 
 ---
