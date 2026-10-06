@@ -11,7 +11,7 @@ hl.config({
   input = {
     kb_layout = "us,th",
     kb_variant = "",
-    kb_model = "pc105",
+    kb_model = "",
     kb_options = "",
     kb_rules = "",
     repeat_rate = 50,
@@ -38,6 +38,21 @@ hl.config({
     },
   },
 })
+
+-- Multi-language example:
+-- NOTE: If specifying multiple layouts in kb_layout, kb_variant must have matching
+-- comma separators (e.g. kb_layout = "fr,de", kb_variant = "azerty," or kb_variant = "").
+--
+-- hl.config({
+--   input = {
+--     kb_layout = "fr,de",
+--     kb_variant = "azerty,",
+--     kb_options = "grp:alt_shift_toggle",
+--   },
+--   misc = {
+--     focus_on_activate = true,
+--   },
+-- })
 
 -- Example:
 -- hl.config({
