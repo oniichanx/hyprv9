@@ -1,0 +1,7 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+  "runtime.version": "LuaJIT",
+  "diagnostics.globals": ["hl", "ONIICHANX_DEFAULTS"],
+  "workspace.checkThirdParty": false,
+  "workspace.library": ["${HOME}/.config/hypr", "../"]
+}
