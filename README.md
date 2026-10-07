@@ -893,6 +893,39 @@ yay -S goverlay
 </details>
 
 <details>
+  <summary><strong> If You want to using web driver for mouse or keyboard must try this </strong></summary>
+
+---
+
+This project is gui https://github.com/RitzDaCat/udev-autoconfig
+
+- DEPENDENCIES
+
+```
+git clone https://github.com/RitzDaCat/udev-autoconfig.git
+```
+
+```
+cd udev-autoconfig
+```
+
+```
+makepkg -si -p PKGBUILD.git
+```
+
+- This for uinstall
+
+```
+sudo pacman -Rns udev-autoconfig-git
+```
+
+- Done
+
+---
+
+</details>
+
+<details>
   <summary><strong> If You don't likes SDDM You can use it </strong></summary>
 
 ---
